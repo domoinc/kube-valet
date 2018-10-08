@@ -86,11 +86,22 @@ See the [examples](./_examples) for detailed instructions on using kube-valet.
   * Golang 1.9+
   * [glide](https://github.com/Masterminds/glide)
 
+### Process
+
+  * Code change
+  * `make`
+  * Run via `./build/kube-valet --kubeconfig ~/.kube/config --loglevel="DEBUG" --no-leader-elect`
+
+### Building a Release Image
+
+  * `make docker-image`
+  * `make push-docker-image`
+
 ## Contributing
 
 PRs and issues are encouraged and welcome.
 
-# Community Code of Conduct
+## Community Code of Conduct
 
 Kube-valet follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
