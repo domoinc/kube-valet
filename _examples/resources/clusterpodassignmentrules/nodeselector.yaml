@@ -1,6 +1,6 @@
 # Match workload=job and apply a node-type=job-host selector
 apiVersion: assignments.kube-valet.io/v1alpha1
-kind: PodAssignmentRule
+kind: ClusterPodAssignmentRule
 metadata:
   name: nodeselector
 spec:

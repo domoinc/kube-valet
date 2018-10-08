@@ -1,6 +1,6 @@
 # Match workload-type=interruptible pods and apply a toleratation
 apiVersion: assignments.kube-valet.io/v1alpha1
-kind: PodAssignmentRule
+kind: ClusterPodAssignmentRule
 metadata:
   name: tolerations
 spec:

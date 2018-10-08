@@ -1,7 +1,7 @@
 # Match complex pods and apply all scheduling details to them
 # this is overkill for most real workloads but shows what is possible
 apiVersion: assignments.kube-valet.io/v1alpha1
-kind: PodAssignmentRule
+kind: ClusterPodAssignmentRule
 metadata:
   name: complex
 spec:
