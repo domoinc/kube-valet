@@ -1,0 +1,14 @@
+# Match workload-type=interruptible pods and apply a toleratation
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: PodAssignmentRule
+metadata:
+  name: tolerations
+spec:
+  targetLabels:
+    workload-type: interruptible
+  scheduling:
+    mergeStrategy: OverwriteAll
+    tolerations:
+    - key: "NodeLifespan"
+      operator: "Equal"
+      value: "Volatile"

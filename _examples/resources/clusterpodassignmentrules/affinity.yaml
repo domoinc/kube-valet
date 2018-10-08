@@ -1,0 +1,26 @@
+# Match workload-type=isolated pods and apply an podantiaffinity so all pods with the label will only run on
+# separate nodes
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: PodAssignmentRule
+metadata:
+  name: affinity
+spec:
+  targetLabels:
+    workload-type: isolated
+  scheduling:
+    mergeStrategy: OverwriteAll
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - isolated
+            topologyKey: kubernetes.io/hostname
+    tolerations:
+    - key: "key"
+      operator: "Equal"
+      value: "value"
+      effect: "NoSchedule"

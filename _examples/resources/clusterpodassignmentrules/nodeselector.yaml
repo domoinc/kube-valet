@@ -1,0 +1,12 @@
+# Match workload=job and apply a node-type=job-host selector
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: PodAssignmentRule
+metadata:
+  name: nodeselector
+spec:
+  targetLabels:
+    workload: job
+  scheduling:
+    mergeStrategy: OverwriteAll
+    nodeSelector:
+      node-type: job-host

@@ -1,0 +1,15 @@
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: NodeAssignmentGroup
+metadata:
+  name: priority
+spec:
+  # Target all non-master nodes in the cluster
+  targetLabels:
+    node-role.kubernetes.io/worker: ""
+  assignments:
+      # Ensure that two nodes in the targeted group have:
+      #   label:  nag.assignments.kube-valet.io/priority="true"
+      #   taint:  nag.assignments.kube-valet.io/priority="true:NoSchedule"
+    - name: "true"
+      mode: LabelAndTaint
+      numDesired: 2

@@ -1,0 +1,15 @@
+package: github.com/domoinc/kube-valet
+import:
+- package: github.com/ghodss/yaml
+  version: ^1.0.0
+- package: gopkg.in/alecthomas/kingpin.v2
+  version: ^2.2.6
+- package: k8s.io/code-generator
+  version: 961bc077103364eb5bda2c40e2b560d068c9a8c6
+
+- package: k8s.io/client-go
+  version: v5.0.1
+- package: k8s.io/apimachinery
+  version: kubernetes-1.8.0
+- package: k8s.io/api
+  version: kubernetes-1.8.1

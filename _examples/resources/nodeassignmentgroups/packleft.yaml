@@ -1,0 +1,14 @@
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: NodeAssignmentGroup
+metadata:
+  name: packleft
+spec:
+  # Target all non-master nodes in the cluster
+  targetLabels:
+    node-role.kubernetes.io/worker: ""
+  # All Remaining nodes will have:
+  #   label: nag.kube-valet.io/packleft="true"
+  defaultAssignment:
+    name: default
+    mode: LabelAndTaint
+    schedulingMode: PackLeft

@@ -1,0 +1,91 @@
+# Create a clusterrole with access to create crds and fleet resources
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-valet
+rules:
+# Full access to the custom crds for self-creation
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  resourceNames:
+  - clusterpodassignmentrules
+  - podassignmentrules
+  - nodeassignmentgroups
+  verbs:
+  - "*"
+## Full access to the custom resources
+- apiGroups:
+  - assignments.kube-valet.io
+  resources:
+  - clusterpodassignmentrules
+  - podassignmentrules
+  - nodeassignmentgroups
+  verbs:
+  - "*"
+# Full access to pods and nodes
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - '*'
+---
+# Bind the controller to the created cluster role
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kube-valet
+subjects:
+ - kind: ServiceAccount
+   name: kube-valet
+   namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: kube-valet
+  apiGroup: rbac.authorization.k8s.io
+---
+# Create a role with access to the configmap
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kube-valet
+  namespace: kube-system
+rules:
+# Can list/watch all
+# Creation permission must be given without resourceNames
+# it's added to the list here so that election can create the configmap it uses
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - list
+  - watch
+  - create
+# Full access to election configmap
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  resourceNames:
+  - kube-valet-election
+  verbs:
+  - "*"
+---
+# Bind the controller to a namespace role for configmap access
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kube-valet
+  namespace: kube-system
+subjects:
+ - kind: ServiceAccount
+   name: kube-valet
+   namespace: kube-system
+roleRef:
+  kind: Role
+  name: kube-valet
+  apiGroup: rbac.authorization.k8s.io

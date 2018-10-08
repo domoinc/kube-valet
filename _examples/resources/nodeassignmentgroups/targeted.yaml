@@ -1,0 +1,14 @@
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: NodeAssignmentGroup
+metadata:
+  name: targeted
+spec:
+  # Target all nodes in the clsuter that are explicitly labeled as allocatable and with ssd disks
+  targetLabels:
+    allocatable: "true"
+    disk: "ssd"
+  assignments:
+    # Make sure one of the nodes always has:
+    #   label: nag.assignments.kube-valet.io/targeted="assignment1"
+    - name: "assignment1"
+      numDesired: 1

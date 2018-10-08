@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-valet
+  namespace: kube-system
+  labels:
+    k8s-app: kube-valet
+spec:
+  progressDeadlineSeconds: 600
+  # Increase the number of replicas to reduce the likelyhood of pods getting stuck
+  # in an un-initialized state. For a zero-risk deployment. Use static pods
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: kube-valet
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-valet
+    spec:
+      # For enhanced stability, kube-valet pods will try to avoid running on the same node.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: k8s-app
+                  operator: In
+                  values:
+                  - kube-valet
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: kube-valet
+        # Production systems should use a stable version tag
+        image: domoinc/kube-valet:latest
+        command:
+          - /kube-valet
+          # Run with leader election on so only one pod is active at a time.
+          - --leader-elect
+        imagePullPolicy: IfNotPresent
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: kube-valet
+      serviceAccountName: kube-valet
+      terminationGracePeriodSeconds: 300

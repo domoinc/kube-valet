@@ -1,0 +1,34 @@
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: NodeAssignmentGroup
+metadata:
+  name: preference
+spec:
+  # Target all non-master nodes in the cluster
+  targetLabels:
+    node-role.kubernetes.io/worker: ""
+  assignments:
+    # One node will have:
+    #   label:  nag.assignments.kube-valet.io/preference="jobs"
+    #   taint:  nag.assignments.kube-valet.io/preference="jobs:PreferNoSchedule"
+    - name: jobs
+      mode: LabelAndTaint
+      taintEffect: PreferNoSchedule
+      numDesired: 1
+    # One node will have:
+    #   label:  nag.assignments.kube-valet.io/preference="services"
+    #   taint:  nag.assignments.kube-valet.io/preference="services:PreferNoSchedule
+    - name: services
+      mode: LabelAndTaint
+      taintEffect: PreferNoSchedule
+      numDesired: 1
+    # One node will have:
+    #   label:  nag.assignments.kube-valet.io/preference="workers"
+    #   taint:  nag.assignments.kube-valet.io/preference="workers:PreferNoSchedule
+    - name: workers
+      mode: LabelAndTaint
+      taintEffect: PreferNoSchedule
+      numDesired: 1
+  # All Remaining nodes will have:
+  #   label:  nag.assignments.kube-valet.io/preference="none"
+  defaultAssignment:
+    name: none

@@ -1,0 +1,12 @@
+# This is a very simple example that makes all pods with the label worktype=simple schedule to nodes with a label of for-worktype=simple
+apiVersion: assignments.kube-valet.io/v1alpha1
+kind: PodAssignmentRule
+metadata:
+  name: simple
+  namespace: default
+spec:
+  targetLabels:
+    worktype: "simple"
+  scheduling:
+    NodeSelector:
+      for-worktype: "simple"
