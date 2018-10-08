@@ -3,7 +3,7 @@ IMAGE ?= domoinc/kube-valet:$(VERSION)
 
 .PHONY: all build test
 
-all: install-deps crs build
+all: install-deps customresources build
 
 install-deps:
 	glide i
@@ -15,7 +15,7 @@ build:
 clean:
 	rm build/* || true
 
-test: test-crs test-pkgs
+test: test-customresources test-pkgs
 
 test-pkgs:
 	# client-go is huge, install deps so future tests are faster
@@ -32,9 +32,9 @@ push-docker-image-%: tag-docker-image-%
 
 # Targets to build custom resources and clients
 
-crs: clean-crs gen-go-crs test-crs
+customresources: clean-customresources gen-customresources test-customresources
 
-gen-go-crs: clean-crs
+gen-customresources: clean-customresources
 	./vendor/k8s.io/code-generator/generate-groups.sh \
 	all \
 	github.com/domoinc/kube-valet/pkg/client \
@@ -44,13 +44,13 @@ gen-go-crs: clean-crs
 	# workaround https://github.com/openshift/origin/issues/10357
 	find pkg/client -name "clientset_generated.go" -exec sed -i'' 's/return \\&Clientset{fakePtr/return \\&Clientset{\\&fakePtr/g' '{}' \;
 
-clean-crs:
+clean-customresources:
 	# Delete all generated code.
 	rm -rf pkg/client
 	rm -f pkg/apis/*/*/zz_generated.deepcopy.go
 
 # This is a basic smoke-test to make sure the types compile
-test-crs:
+test-customresources:
 	go build -o build/crud -i _examples/clients/crud.go
 	go build -o build/list -i _examples/clients/list.go
 
