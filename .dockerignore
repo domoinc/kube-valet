@@ -1,3 +1,9 @@
+.dockerignore
 Dockerfile
-.glide
 Makefile
+build/
+deploy/
+docs/
+_examples/
+.glide
+vendor/
