@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/domoinc/kube-valet
 ENV GLIDE_VERSION v0.13.1
 
 # Install glide
-RUN curl -L -o - https://github.com/Masterminds/glide/releases/download/${GLIDE_VERSION}/glide-${GLIDE_VERSION}-linux-amd64.tar.gz |tar --strip-components=1 -zxv linux-amd64/glide && mv glide /usr/bin/ && chmod +x /usr/bin/glide
+RUN curl -L -o - https://github.com/Masterminds/glide/releases/download/${GLIDE_VERSION}/glide-${GLIDE_VERSION}-linux-amd64.tar.gz | tar --strip-components=1 -C /usr/bin -zxv linux-amd64/glide && chmod +x /usr/bin/glide
 
 # Install deps
 COPY glide.yaml glide.lock ./

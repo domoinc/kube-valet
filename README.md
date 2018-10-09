@@ -7,7 +7,7 @@ Kube-valet is a [custom controller](https://kubernetes.io/docs/concepts/api-exte
 
 It does this by utilizing
 [CustomResourceDefinitions](https://kubernetes.io/docs/concepts/api-extension/custom-resources/#customresourcedefinitions) to define its behavior and an [Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#initializers)
-to modify pods as they after they are created but before they are scheduled.
+to modify pods after they are created but before they are scheduled.
 
 Kube-valet is currently in an **alpha** state.
 
@@ -54,7 +54,7 @@ kubectl create -f deploy/deployment.yaml
 
 #### Resolving a Self-Initialization Stalemate
 
-If the initializerconfiguration as already been created, or if all of the kube-valet pods ever get deleted at the same time, The kube-valet member pods must be manually initialized by editing them and removing `.metadata.initializers` list or with the following command:
+If the initializerconfiguration has already been created, or if all of the kube-valet pods ever get deleted at the same time, The kube-valet member pods must be manually initialized by editing them and removing `.metadata.initializers` list or with the following command:
 
 ```bash
 kubectl --namespace=kube-system get po --include-uninitialized -l k8s-app=kube-valet -o name | xargs -n1 kubectl --namespace=kube-system patch --type=json -p='[{"op":"remove","path":"/metadata/initializers/pending/0"}]'
@@ -107,7 +107,7 @@ Kube-valet follows the [CNCF Code of Conduct](https://github.com/cncf/foundation
 
 ## Disaster Recovery
 
-If pods are not showin up via normal `kubectl` commands check for unintialized pods by adding the `--include-uninitialized` flag.
+If pods are not showing up via normal `kubectl` commands check for unintialized pods by adding the `--include-uninitialized` flag.
 
 ```bash
 kubectl get pods --include-uninitialized --all-namespaces

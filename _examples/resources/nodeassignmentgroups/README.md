@@ -2,7 +2,7 @@
 
 This custom resource can be used to dynamically label and/or taint nodes. This often pairs well with the (Cluster)PodAssignmentRules as a way to distribute load among nodes transparently to users.
 
-You can request a static number of nodes for a specific purpose, a percentage of nodes, [all nodes](./nodeassignmentgroups/default.yaml), or even do more advanced scheduling like [PackLeft](./nodeassignmentgroups/packleft.yaml).
+You can request a static number of nodes for a specific purpose, a percentage of nodes, [all nodes](./default.yaml), or even do more advanced scheduling like [PackLeft](./packleft.yaml).
 
 
 ## v1Alpha1 Format
