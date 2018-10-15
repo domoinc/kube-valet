@@ -26,6 +26,9 @@ kubectl create -f deploy/serviceaccount.yaml
 
 # If the cluster has RBAC enabled, create the RBAC resources
 kubectl create -f deploy/rbac.yaml
+
+# Protect the masters from being included in any NodeAssignmentGroups (skip this if running minikube)
+kubectl label node -l node-role.kubernetes.io/master nags.kube-valet.io/protected=true
 ```
 
 ## Run the Controller

@@ -6,6 +6,15 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+const (
+	// ProtectedNodeLabelKey is used to tell kube-valet to never include a specific node in any NodeAssignmentGroups. Regardless of targeting.
+	// Any node that is marked as protected will also have any existing NodeAssignmentGroup taints and labels removed.
+	ProtectedNodeLabelKey = "nags.kube-valet.io/protected"
+
+	// ProtectedLabelValue is the value that must be set on ProtectedNodeLabelKey for the node to be protected
+	ProtectedLabelValue = "true"
+)
+
 // DeleteTaintsByKey removes all the taints that have the same key to given taintKey
 func deleteTaintsByKey(taints []corev1.Taint, taintKey string) ([]corev1.Taint, bool) {
 	newTaints := []corev1.Taint{}
@@ -54,6 +63,11 @@ func deleteTaints(taintsToRemove []corev1.Taint, newTaints *[]corev1.Taint) ([]e
 }
 
 func (nag *NodeAssignmentGroup) TargetsNode(node *corev1.Node) bool {
+	// Nodes with the ProtectedNodeLabel set to true are never matched
+	if val, ok := node.GetLabels()[ProtectedNodeLabelKey]; ok && val == ProtectedLabelValue {
+		return false
+	}
+
 	// If there are no target labels than all nodes are targeted
 	matched := true
 
