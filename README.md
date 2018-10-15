@@ -77,15 +77,29 @@ Then Create the initalizerconfiguration for pods:
 kubectl create -f deploy/initializerconfiguration.yaml
 ```
 
-## Examples
+## Use Kube-Valet
 
-See the [examples](./_examples) for detailed instructions on using kube-valet and detailed examples of resources.
+Kube-valet is configured entirely through the custom resources made during installation. The resources can be created, updated, and deleted just like any other kubernetes resource. Example:
 
-## valetctl
+```bash
+kubectl create -f _examples/resources/nodeassignmentgroups/simple.yaml
+kubectl get nags
+kubectl delete nag simple
+```
 
-### Install
+Available custom resources:
+
+  * pars  - podassignmentrules
+  * cpars - clusterpodassignmentrules
+  * nags  - nodeassignmentgroups
+
+See the [examples](./_examples) for example client-go scripts and detailed custom resource examples.
+
+## Use Valetctl to Configure Kube-Valet
 
 valetctl is a tool that makes it easier to create and report on kube-valet resources.
+
+### Install
 
 ```bash
 curl -Lo /usr/local/bin/valetctl http://RELEASEURL
