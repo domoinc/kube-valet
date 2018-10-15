@@ -142,8 +142,12 @@ func (wc *WriterContext) updateAssignmentChanges() {
 	wc.AssignmentChanges = make(map[string]int)
 	// Calculate any changes that are required
 	for _, a := range wc.Nag.Spec.Assignments {
-		// get the number of desired nodes based on PercentDesired. Rounding down
+		// get the number of desired nodes based on PercentDesired. Rounding down. With a minimum of 1
 		desired := int(float32(len(wc.TargetedNodes)) * float32(a.PercentDesired) / 100.0)
+		if desired == 0 {
+			desired = 1
+		}
+
 		// if NumDesired is given, and is larger, use it instead
 		if a.NumDesired > desired {
 			desired = a.NumDesired
