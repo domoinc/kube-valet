@@ -5,6 +5,8 @@ IMAGE ?= domoinc/kube-valet:$(VERSION)
 
 all: install-deps customresources build
 
+build: kube-valet valetctl
+
 install-deps:
 	glide i
 
