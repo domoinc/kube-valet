@@ -14,8 +14,11 @@ RUN glide i
 # Test and Build
 COPY . .
 RUN go test ./...
-RUN CGO_ENABLED=0 GOOS=linux go build --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo
+RUN CGO_ENABLED=0 GOOS=linux go build -i --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo
 RUN cp kube-valet /kube-valet
+
+RUN CGO_ENABLED=0 GOOS=linux go build -i --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo  bin/valetctl.go
+RUN cp valetctl /valetctl
 
 ## Final image build
 FROM alpine:3.2

@@ -1,16 +1,20 @@
 VERSION ?= $(shell echo $${BRANCH_NAME:-local} | sed s/[^a-zA-Z0-9_-]/_/)_$(shell git describe --always --dirty)
 IMAGE ?= domoinc/kube-valet:$(VERSION)
 
-.PHONY: all build test
+.PHONY: all kube-valet valetctl test
 
 all: install-deps customresources build
 
 install-deps:
 	glide i
 
-build:
+kube-valet:
 	mkdir build || true
-	CGO_ENABLED=0 GOOS=linux go build -v -i -pkgdir ./build/gopkgs --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo -o build/kube-valet
+	CGO_ENABLED=0 GOOS=linux go build -v -i -pkgdir $(PWD)/build/gopkgs --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo -o build/kube-valet
+
+valetctl:
+	mkdir build || true
+	CGO_ENABLED=0 GOOS=linux go build -v -i -pkgdir $(PWD)/build/gopkgs --ldflags '-extldflags "-static"' -tags netgo -installsuffix netgo -o build/valetctl bin/valetctl.go
 
 clean:
 	rm build/* || true
