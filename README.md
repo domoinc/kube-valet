@@ -118,6 +118,9 @@ valetctl assignment create sensitivereq require -t jobtype=sensitive -A for-jobs
 
 # Make sure all jobtype=relaxed pods prefer to run on the separated nodes
 valetctl assignment create relaxedpref prefer -t jobtype=relaxed -A for-jobs/relaxed
+
+# Make sure all jobtype=misc pods prefer to run any for-jobs assignments
+valetctl assignment create miscpref prefer -t jobtype=misc -A for-jobs
 ```
 
 Make pods that match the rules created above and prove that they are on the designated nodes.
@@ -143,14 +146,23 @@ valetctl group report nags for-jobs
 
 # Check that all or most of the pods went to the expected nodes automatically
 kubectl get pods -l jobtype=relaxed -o wide
+
+# Run some jobtype=misc pods
+kubectl run misc --image=alpine:latest sleep 36000 -l jobtype=misc --replicas=5
+
+# Check which nodes are in any assignment
+valetctl group report nags for-jobs
+
+# Check that all or most of the pods went to the expected nodes automatically
+kubectl get pods -l jobtype=misc -o wide
 ```
 
 Clean up the test resources
 
 ```bash
 kubectl delete nag for-jobs
-kubectl delete cpar sensitivereq relaxedpref
-kubectl delete deployment sensitive relaxed
+kubectl delete cpar sensitivereq relaxedpref miscpref
+kubectl delete deployment sensitive relaxed misc
 ```
 
 ## Protecting Resources
