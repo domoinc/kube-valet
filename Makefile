@@ -41,11 +41,23 @@ push-docker-image-%: tag-docker-image-%
 customresources: clean-customresources gen-customresources test-customresources
 
 gen-customresources: clean-customresources
-	./vendor/k8s.io/code-generator/generate-groups.sh \
-	all \
+	grep "openapi-gen" ./vendor/k8s.io/code-generator/generate-groups.sh || cat ./_openapi/openapi-gen.sh >> ./vendor/k8s.io/code-generator/generate-groups.sh \
+
+	mkdir -p ./pkg/client/openapi
+
+	echo "package openapi" > ./pkg/client/openapi/doc.go
+	cp ./_openapi/path_template.tmpl ./pkg/client/openapi
+	cp ./_openapi/print_test.go ./pkg/client/openapi
+
+	./vendor/k8s.io/code-generator/generate-groups.sh all \
 	github.com/domoinc/kube-valet/pkg/client \
 	github.com/domoinc/kube-valet/pkg/apis \
 	"assignments:v1alpha1"
+
+	go test ./pkg/client/openapi/*.go -test.run=TestWriteOpenAPISpec
+
+	rm ./pkg/client/openapi/path_template.tmpl
+	rm ./pkg/client/openapi/print_test.go
 
 	# workaround https://github.com/openshift/origin/issues/10357
 	find pkg/client -name "clientset_generated.go" -exec sed -i'' 's/return \\&Clientset{fakePtr/return \\&Clientset{\\&fakePtr/g' '{}' \;
