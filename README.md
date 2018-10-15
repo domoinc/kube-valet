@@ -77,9 +77,80 @@ Then Create the initalizerconfiguration for pods:
 kubectl create -f deploy/initializerconfiguration.yaml
 ```
 
-## Usage
+## Examples
 
-See the [examples](./_examples) for detailed instructions on using kube-valet.
+See the [examples](./_examples) for detailed instructions on using kube-valet and detailed examples of resources.
+
+## valetctl
+
+### Install
+
+valetctl is a tool that makes it easier to create and report on kube-valet resources.
+
+```bash
+curl -Lo /usr/local/bin/valetctl http://RELEASEURL
+```
+
+### Usage Example
+
+Set aside some nodes and make specific pods target those nodes.
+
+```bash
+# Isolate one node for sensitive jobs and label two more for relaxed jobs
+valetctl group create for-jobs sensitive:1:LabelAndTaint relaxed:2
+
+# Make sure all jobtype=sensitive pods in any namespace run on the isolated node.
+valetctl assignment create sensitivereq require -t jobtype=sensitive -A for-jobs/sensitive
+
+# Make sure all jobtype=relaxed pods prefer to run on the separated nodes
+valetctl assignment create relaxedpref prefer -t jobtype=relaxed -A for-jobs/relaxed
+```
+
+Make pods that match the rules created above and prove that they are on the designated nodes.
+
+```bash
+# Report by nodes
+valetctl group report nodes
+
+# Run some jobtype=sensitive pods
+kubectl run sensitive --image=alpine:latest sleep 36000 -l jobtype=sensitive --replicas=5
+
+# Check which nodes are in the sensitive assignment column
+valetctl group report nags for-jobs
+
+# Check that the all of the pods went to the expected nodes automatically
+kubectl get pods -l jobtype=sensitive -o wide
+
+# Run some jobtype=relaxed pods
+kubectl run relaxed --image=alpine:latest sleep 36000 -l jobtype=relaxed --replicas=5
+
+# Check which nodes are in the relaxed assignment column
+valetctl group report nags for-jobs
+
+# Check that all or most of the pods went to the expected nodes automatically
+kubectl get pods -l jobtype=relaxed -o wide
+```
+
+Clean up the test resources
+
+```bash
+kubectl delete nag for-jobs
+kubectl delete cpar sensitivereq relaxedpref
+kubectl delete deployment sensitive relaxed
+```
+
+## Protecting Resources
+
+It is possible to instruct kube-valet to always ignore specific pods or nodes.
+
+### Protecting Pods
+
+  * Kube-valet will ignore pods with a label of `pod.initializer.kube-valet.io/protected=true`
+
+### Protecting Nodes
+
+  * Kube-valet will ignore nodes with a label of `nags.kube-valet.io/protected=true`
+
 
 ## Local Development
 
