@@ -14,13 +14,13 @@ import (
 
 // Controller manages events for pods, nodes, and nags and rebalances pack left strategies on the nag
 type Controller struct {
-	queue             *queues.RetryingWorkQueue
-	kubeClientset     *kubernetes.Clientset
+	queue          *queues.RetryingWorkQueue
+	kubeClientset  *kubernetes.Clientset
 	valetClientset *valetclient.Clientset
-	plm               *Manager
-	nagIndex          cache.Indexer
-	nodeIndex         cache.Indexer
-	log               *logging.Logger
+	plm            *Manager
+	nagIndex       cache.Indexer
+	nodeIndex      cache.Indexer
+	log            *logging.Logger
 }
 
 // NewController creates a new packleft.Controller

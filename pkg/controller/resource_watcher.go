@@ -24,10 +24,10 @@ import (
 // ResourceWatcher abstracts and shares indexers and informers.
 // Passes events onto the controllers that handle the business logic for each event.
 type ResourceWatcher struct {
-	kubeClientset     *kubernetes.Clientset
+	kubeClientset  *kubernetes.Clientset
 	valetClientset *valetclient.Clientset
-	log               *logging.Logger
-	config            *config.ValetConfig
+	log            *logging.Logger
+	config         *config.ValetConfig
 
 	parInformer cache.Controller
 	parIndexer  cache.Indexer
@@ -53,10 +53,10 @@ type ResourceWatcher struct {
 // NewResourceWatcher creates a new ResourceWatcher
 func NewResourceWatcher(kubeClientet *kubernetes.Clientset, valetClientset *valetclient.Clientset, config *config.ValetConfig) *ResourceWatcher {
 	return &ResourceWatcher{
-		kubeClientset:     kubeClientet,
+		kubeClientset:  kubeClientet,
 		valetClientset: valetClientset,
-		log:               logging.MustGetLogger("ResourceWatcher"),
-		config:            config,
+		log:            logging.MustGetLogger("ResourceWatcher"),
+		config:         config,
 	}
 }
 

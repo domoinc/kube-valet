@@ -24,23 +24,23 @@ const (
 
 // Manager mangaes interactions with nags and the nodes they point to
 type Manager struct {
-	nagIndex          cache.Indexer
-	nodeIndex         cache.Indexer
-	podIndex          cache.Indexer
+	nagIndex       cache.Indexer
+	nodeIndex      cache.Indexer
+	podIndex       cache.Indexer
 	valetClientset *valetclient.Clientset
-	kubeClientset     *kubernetes.Clientset
-	log               *logging.Logger
+	kubeClientset  *kubernetes.Clientset
+	log            *logging.Logger
 }
 
 // NewManager creates a new manager
 func NewManager(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.Indexer, kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset) *Manager {
 	return &Manager{
-		nagIndex:          nagIndex,
-		nodeIndex:         nodeIndex,
-		podIndex:          podIndex,
-		kubeClientset:     kubeClientset,
+		nagIndex:       nagIndex,
+		nodeIndex:      nodeIndex,
+		podIndex:       podIndex,
+		kubeClientset:  kubeClientset,
 		valetClientset: valetClientset,
-		log:               logging.MustGetLogger("PackLeftSchedulingManager"),
+		log:            logging.MustGetLogger("PackLeftSchedulingManager"),
 	}
 }
 

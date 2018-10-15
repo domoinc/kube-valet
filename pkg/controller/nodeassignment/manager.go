@@ -15,16 +15,16 @@ const (
 )
 
 type Manager struct {
-	kubeClientset     *kubernetes.Clientset
+	kubeClientset  *kubernetes.Clientset
 	valetClientset *valetclient.Clientset
-	log               *logging.Logger
+	log            *logging.Logger
 }
 
 func NewManager(kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset) *Manager {
 	return &Manager{
-		kubeClientset:     kubeClientset,
+		kubeClientset:  kubeClientset,
 		valetClientset: valetClientset,
-		log:               logging.MustGetLogger("NodeAssignmentManager"),
+		log:            logging.MustGetLogger("NodeAssignmentManager"),
 	}
 }
 

@@ -17,18 +17,18 @@ import (
 )
 
 type KubeValet struct {
-	kubeClientset     *kubernetes.Clientset
+	kubeClientset  *kubernetes.Clientset
 	valetClientset *valetclient.Clientset
-	stopChan          chan struct{}
-	config            *config.ValetConfig
+	stopChan       chan struct{}
+	config         *config.ValetConfig
 }
 
 func NewKubeValet(kc *kubernetes.Clientset, dc *valetclient.Clientset, config *config.ValetConfig) *KubeValet {
 	logging.SetBackend(config.LoggingBackend)
 	return &KubeValet{
-		kubeClientset:     kc,
+		kubeClientset:  kc,
 		valetClientset: dc,
-		config:            config,
+		config:         config,
 	}
 }
 
