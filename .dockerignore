@@ -1,3 +1,5 @@
+CNAME
+_config.yml
 .dockerignore
 Dockerfile
 Makefile
