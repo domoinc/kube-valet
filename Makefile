@@ -1,7 +1,7 @@
 VERSION ?= $(shell echo $${BRANCH_NAME:-local} | sed s/[^a-zA-Z0-9_-]/_/)_$(shell git describe --always --dirty)
-IMAGE ?= domoinc/kube-valet:$(VERSION)
+IMAGE ?= domoinc/kube-valet
 
-.PHONY: all kube-valet valetctl test
+.PHONY: all kube-valet valetctl test release
 
 all: install-deps customresources build
 
@@ -31,10 +31,15 @@ test-pkgs:
 	go test -v ./pkg/...
 
 docker-image:
-	docker build -t $(IMAGE) .
+	docker build -t $(IMAGE):$(VERSION) .
 
-push-docker-image-%: tag-docker-image-%
-	docker push $(IMAGE)
+release: docker-image
+	# Push the versioned tag
+	docker push $(IMAGE):$(VERSION)
+
+	# Push the latest tag
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
+	docker push $(IMAGE):latest
 
 # Targets to build custom resources and clients
 
