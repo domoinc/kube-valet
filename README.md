@@ -177,6 +177,15 @@ It is possible to instruct kube-valet to always ignore specific pods or nodes.
 
   * Kube-valet will ignore nodes with a label of `nags.kube-valet.io/protected=true`
 
+## Disaster Recovery
+
+If pods are not showing up via normal `kubectl` commands, check for unintialized pods by adding the `--include-uninitialized` flag. Example:
+
+```bash
+kubectl get pods --include-uninitialized --all-namespaces
+```
+
+If kube-valet is not running or not working and pods are getting stuck in an un-initalized state: Follow the [Disaster Recovery docs](./docs/DisasterRecovery.md) to disable the initializer and manually initialize all pods.
 
 ## Local Development
 
@@ -205,12 +214,8 @@ PRs and issues are encouraged and welcome.
 
 Kube-valet follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
 
-## Disaster Recovery
+## Credits
 
-If pods are not showing up via normal `kubectl` commands check for unintialized pods by adding the `--include-uninitialized` flag.
+Copyright (c) 2018 Domo, Inc.
 
-```bash
-kubectl get pods --include-uninitialized --all-namespaces
-```
-
-If kube-valet is not running or not working and pods are getting stuck in an un-initalized state: Follow the [Disaster Recovery docs](./docs/DisasterRecovery.md) to disable the initializer and manually initialize all pods.
+Kube-valet was originally created by Carson Anderson (@carsonoid) with additional work done by @from-nibly
