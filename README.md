@@ -218,4 +218,4 @@ Kube-valet follows the [CNCF Code of Conduct](https://github.com/cncf/foundation
 
 Copyright (c) 2018 Domo, Inc.
 
-Kube-valet was originally created by Carson Anderson (@carsonoid) with additional work done by @from-nibly
+Kube-valet was originally created by Carson Anderson ([@carsonoid](https://github.com/carsonoid)) with additional help from Jordan Davidson [@from-nibly](https://github.com/from-nibly)
