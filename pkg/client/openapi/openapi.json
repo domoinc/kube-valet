@@ -1,370 +1,303 @@
 {
   "definitions": {
     "assignments.v1alpha1.AssignmentStates": {
-      "Dependencies": [],
-      "Schema": {
-        "description": "AssignmentStates reports the satisfaction for each assignment",
-        "properties": {
-          "name": {
-            "description": "Name is the name of the assignment",
-            "type": "string"
-          },
-          "numAssigned": {
-            "description": "NumSatisfied represents the number of nodes that were assigned",
-            "format": "int64",
-            "type": "integer"
-          }
+      "description": "AssignmentStates reports the satisfaction for each assignment",
+      "properties": {
+        "name": {
+          "description": "Name is the name of the assignment",
+          "type": "string"
+        },
+        "numAssigned": {
+          "description": "NumSatisfied represents the number of nodes that were assigned",
+          "format": "int64",
+          "type": "integer"
         }
       }
     },
     "assignments.v1alpha1.ClusterPodAssignmentRule": {
-      "Dependencies": [
-        "assignments.v1alpha1.PodAssignmentRuleSpec",
-        "v1.ObjectMeta"
-      ],
-      "Schema": {
-        "description": "ClusterPodAssignmentRule defines PodAssignmentRules that are applied cluster-wide",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ObjectMeta"
-          },
-          "spec": {
-            "$ref": "assignments.v1alpha1.PodAssignmentRuleSpec",
-            "description": "Spec defines the behavior of the rule"
-          }
+      "description": "ClusterPodAssignmentRule defines PodAssignmentRules that are applied cluster-wide",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
         },
-        "required": [
-          "spec"
-        ]
-      }
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ObjectMeta"
+        },
+        "spec": {
+          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
+          "description": "Spec defines the behavior of the rule"
+        }
+      },
+      "required": [
+        "spec"
+      ]
     },
     "assignments.v1alpha1.ClusterPodAssignmentRuleList": {
-      "Dependencies": [
-        "assignments.v1alpha1.ClusterPodAssignmentRule",
-        "v1.ListMeta"
-      ],
-      "Schema": {
-        "description": "ClusterPodAssignmentRuleList is a list of ClusterPodAssignmentRules",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "items": {
-            "items": {
-              "$ref": "assignments.v1alpha1.ClusterPodAssignmentRule"
-            },
-            "type": "array"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ListMeta"
-          }
+      "description": "ClusterPodAssignmentRuleList is a list of ClusterPodAssignmentRules",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
         },
-        "required": [
-          "items"
-        ]
-      }
+        "items": {
+          "items": {
+            "$ref": "#definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ListMeta"
+        }
+      },
+      "required": [
+        "items"
+      ]
     },
     "assignments.v1alpha1.NodeAssignment": {
-      "Dependencies": [
-        "assignments.v1alpha1.PackLeftScheduling"
-      ],
-      "Schema": {
-        "description": "NodeAssignment describes the assignments possible for the group and the number of nodes for the assignment",
-        "properties": {
-          "mode": {
-            "description": "GroupMode determines whether labels, taints, labels and taints, or nothing is applied to nodes that match the group",
-            "type": "string"
-          },
-          "name": {
-            "description": "Name is used when applying the assignment label to the nodes",
-            "type": "string"
-          },
-          "numDesired": {
-            "description": "NumDesired is the number of nodes that should be assigned to this group. Default: 0 when specified along with PercentDesired, whichever request results in the most nodes is used",
-            "format": "int32",
-            "type": "integer"
-          },
-          "packLeft": {
-            "$ref": "assignments.v1alpha1.PackLeftScheduling",
-            "description": "PackLeft holds configuration options and values here are only used when the SchedulingMode is \"PackLeft\""
-          },
-          "percentDesired": {
-            "description": "PercentDesired is the number percentage of matching nodes that should be assigned to this group. Default: 0 when specified along with NumDesired, whichever request results in the most nodes is used",
-            "format": "int32",
-            "type": "integer"
-          },
-          "schedulingMode": {
-            "description": "SchedulingMode determins what kind of scheduling alteration to use on the assignment do no scheduling alterations by default",
-            "type": "string"
-          },
-          "taintEffect": {
-            "description": "TaintEffect controls the effect of the taint. Possible values come from the upstream type",
-            "type": "string"
-          }
+      "description": "NodeAssignment describes the assignments possible for the group and the number of nodes for the assignment",
+      "properties": {
+        "mode": {
+          "description": "GroupMode determines whether labels, taints, labels and taints, or nothing is applied to nodes that match the group",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name is used when applying the assignment label to the nodes",
+          "type": "string"
+        },
+        "numDesired": {
+          "description": "NumDesired is the number of nodes that should be assigned to this group. Default: 0 when specified along with PercentDesired, whichever request results in the most nodes is used",
+          "format": "int32",
+          "type": "integer"
+        },
+        "packLeft": {
+          "$ref": "#definitions/assignments.v1alpha1.PackLeftScheduling",
+          "description": "PackLeft holds configuration options and values here are only used when the SchedulingMode is \"PackLeft\""
+        },
+        "percentDesired": {
+          "description": "PercentDesired is the number percentage of matching nodes that should be assigned to this group. Default: 0 when specified along with NumDesired, whichever request results in the most nodes is used",
+          "format": "int32",
+          "type": "integer"
+        },
+        "schedulingMode": {
+          "description": "SchedulingMode determins what kind of scheduling alteration to use on the assignment do no scheduling alterations by default",
+          "type": "string"
+        },
+        "taintEffect": {
+          "description": "TaintEffect controls the effect of the taint. Possible values come from the upstream type",
+          "type": "string"
         }
       }
     },
     "assignments.v1alpha1.NodeAssignmentGroup": {
-      "Dependencies": [
-        "assignments.v1alpha1.NodeAssignmentGroupSpec",
-        "assignments.v1alpha1.NodeAssignmentGroupStatus",
-        "v1.ObjectMeta"
-      ],
-      "Schema": {
-        "description": "NodeAssignmentGroup represents the configuration of a group of nodes that will be auto-labeled",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ObjectMeta"
-          },
-          "spec": {
-            "$ref": "assignments.v1alpha1.NodeAssignmentGroupSpec",
-            "description": "Spec defines the group and it's assignments"
-          },
-          "status": {
-            "$ref": "assignments.v1alpha1.NodeAssignmentGroupStatus",
-            "description": "Status represents the current status of the group assignments."
-          }
+      "description": "NodeAssignmentGroup represents the configuration of a group of nodes that will be auto-labeled",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ObjectMeta"
+        },
+        "spec": {
+          "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroupSpec",
+          "description": "Spec defines the group and it's assignments"
+        },
+        "status": {
+          "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroupStatus",
+          "description": "Status represents the current status of the group assignments."
         }
       }
     },
     "assignments.v1alpha1.NodeAssignmentGroupList": {
-      "Dependencies": [
-        "assignments.v1alpha1.NodeAssignmentGroup",
-        "v1.ListMeta"
-      ],
-      "Schema": {
-        "description": "NodeAssignmentGroupList is a list of NodeAssignmentGroups",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "items": {
-            "description": "Items is a list of NodeAssignmentGroups",
-            "items": {
-              "$ref": "assignments.v1alpha1.NodeAssignmentGroup"
-            },
-            "type": "array"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ListMeta"
-          }
+      "description": "NodeAssignmentGroupList is a list of NodeAssignmentGroups",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
         },
-        "required": [
-          "items"
-        ]
-      }
+        "items": {
+          "description": "Items is a list of NodeAssignmentGroups",
+          "items": {
+            "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroup"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ListMeta"
+        }
+      },
+      "required": [
+        "items"
+      ]
     },
     "assignments.v1alpha1.NodeAssignmentGroupSpec": {
-      "Dependencies": [
-        "assignments.v1alpha1.NodeAssignment"
-      ],
-      "Schema": {
-        "description": "NodeAssignmentGroupSpec describes the group and it's assignments",
-        "properties": {
-          "assignments": {
-            "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first.",
-            "items": {
-              "$ref": "assignments.v1alpha1.NodeAssignment"
-            },
-            "type": "array",
-            "x-kubernetes-patch-strategy": "merge"
+      "description": "NodeAssignmentGroupSpec describes the group and it's assignments",
+      "properties": {
+        "assignments": {
+          "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first.",
+          "items": {
+            "$ref": "#definitions/assignments.v1alpha1.NodeAssignment"
           },
-          "defaultAssignment": {
-            "$ref": "assignments.v1alpha1.NodeAssignment",
-            "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first."
+          "type": "array",
+          "x-kubernetes-patch-strategy": "merge"
+        },
+        "defaultAssignment": {
+          "$ref": "#definitions/assignments.v1alpha1.NodeAssignment",
+          "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first."
+        },
+        "targetLabels": {
+          "additionalProperties": {
+            "type": "string"
           },
-          "targetLabels": {
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "TargetLabels is optional. If not provided, the group will match all nodes in the cluster.",
-            "type": "object"
-          }
+          "description": "TargetLabels is optional. If not provided, the group will match all nodes in the cluster.",
+          "type": "object"
         }
       }
     },
     "assignments.v1alpha1.NodeAssignmentGroupStatus": {
-      "Dependencies": [],
-      "Schema": {
-        "description": "NodeAssignmentGroupStatus represents the current status of the group.",
-        "properties": {
-          "numMatched": {
-            "description": "NumMatched represents the number of nodes that matched the targetlabels",
-            "format": "int64",
-            "type": "integer"
-          }
+      "description": "NodeAssignmentGroupStatus represents the current status of the group.",
+      "properties": {
+        "numMatched": {
+          "description": "NumMatched represents the number of nodes that matched the targetlabels",
+          "format": "int64",
+          "type": "integer"
         }
       }
     },
     "assignments.v1alpha1.PackLeftScheduling": {
-      "Dependencies": [],
-      "Schema": {
-        "description": "PackLeftScheduling holds configuration for PackLeft assignments",
-        "properties": {
-          "fullPercent": {
-            "description": "FullPercent defines percent of the Metric that must be used for a node to be considered \"Full\"",
-            "format": "int32",
-            "type": "integer"
-          },
-          "numAvoid": {
-            "description": "NumAvoid indiciates the number of nodes to be set to \"Avoid\" for the given assignment. Assignments with few nodes should be fine with a buffer of 1, But very large cluster may be better off with a larger number. Default: 1",
-            "format": "int32",
-            "type": "integer"
-          },
-          "percentAvoid": {
-            "description": "PercentAvoid indiciates a percentage of nodes to be set to \"Avoid\" for the given assignment when specified along with NumAvoid, whichever request results in the most nodes is used",
-            "format": "int32",
-            "type": "integer"
-          }
+      "description": "PackLeftScheduling holds configuration for PackLeft assignments",
+      "properties": {
+        "fullPercent": {
+          "description": "FullPercent defines percent of the Metric that must be used for a node to be considered \"Full\"",
+          "format": "int32",
+          "type": "integer"
+        },
+        "numAvoid": {
+          "description": "NumAvoid indiciates the number of nodes to be set to \"Avoid\" for the given assignment. Assignments with few nodes should be fine with a buffer of 1, But very large cluster may be better off with a larger number. Default: 1",
+          "format": "int32",
+          "type": "integer"
+        },
+        "percentAvoid": {
+          "description": "PercentAvoid indiciates a percentage of nodes to be set to \"Avoid\" for the given assignment when specified along with NumAvoid, whichever request results in the most nodes is used",
+          "format": "int32",
+          "type": "integer"
         }
       }
     },
     "assignments.v1alpha1.PodAssignmentRule": {
-      "Dependencies": [
-        "assignments.v1alpha1.PodAssignmentRuleSpec",
-        "v1.ObjectMeta"
-      ],
-      "Schema": {
-        "description": "PodAssignmentRule describes pods to match and attributes to apply to them",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ObjectMeta"
-          },
-          "spec": {
-            "$ref": "assignments.v1alpha1.PodAssignmentRuleSpec",
-            "description": "Spec defines the behavior of the rule"
-          }
+      "description": "PodAssignmentRule describes pods to match and attributes to apply to them",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
         },
-        "required": [
-          "spec"
-        ]
-      }
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ObjectMeta"
+        },
+        "spec": {
+          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
+          "description": "Spec defines the behavior of the rule"
+        }
+      },
+      "required": [
+        "spec"
+      ]
     },
     "assignments.v1alpha1.PodAssignmentRuleList": {
-      "Dependencies": [
-        "assignments.v1alpha1.PodAssignmentRule",
-        "v1.ListMeta"
-      ],
-      "Schema": {
-        "description": "PodAssignmentRuleList is a list of PodAssignmentRules",
-        "properties": {
-          "apiVersion": {
-            "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
-            "type": "string"
-          },
-          "items": {
-            "items": {
-              "$ref": "assignments.v1alpha1.PodAssignmentRule"
-            },
-            "type": "array"
-          },
-          "kind": {
-            "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "v1.ListMeta"
-          }
+      "description": "PodAssignmentRuleList is a list of PodAssignmentRules",
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources",
+          "type": "string"
         },
-        "required": [
-          "items"
-        ]
-      }
+        "items": {
+          "items": {
+            "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRule"
+          },
+          "type": "array"
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#definitions/v1.ListMeta"
+        }
+      },
+      "required": [
+        "items"
+      ]
     },
     "assignments.v1alpha1.PodAssignmentRuleScheduling": {
-      "Dependencies": [
-        "v1.Affinity",
-        "v1.Toleration"
-      ],
-      "Schema": {
-        "description": "PodAssignmentRuleScheduling defines the scheduling objects to be applied to the pod",
-        "properties": {
-          "affinity": {
-            "$ref": "v1.Affinity",
-            "description": "Affinity is the upstream pod affinity resource"
-          },
-          "mergeStrategy": {
-            "description": "MergeStrategy defines the behavior of the rule when pods already have existing scheduling details defined",
+      "description": "PodAssignmentRuleScheduling defines the scheduling objects to be applied to the pod",
+      "properties": {
+        "affinity": {
+          "$ref": "#definitions/v1.Affinity",
+          "description": "Affinity is the upstream pod affinity resource"
+        },
+        "mergeStrategy": {
+          "description": "MergeStrategy defines the behavior of the rule when pods already have existing scheduling details defined",
+          "type": "string"
+        },
+        "nodeSelector": {
+          "additionalProperties": {
             "type": "string"
           },
-          "nodeSelector": {
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "NodeSelector is a simple key-value matching for nodes",
-            "type": "object"
-          },
-          "tolerations": {
-            "description": "Tolerations is a list of upstream pod toleration resources",
-            "items": {
-              "$ref": "v1.Toleration"
-            },
-            "type": "array",
-            "x-kubernetes-patch-strategy": "merge"
-          }
+          "description": "NodeSelector is a simple key-value matching for nodes",
+          "type": "object"
         },
-        "required": [
-          "mergeStrategy"
-        ]
-      }
+        "tolerations": {
+          "description": "Tolerations is a list of upstream pod toleration resources",
+          "items": {
+            "$ref": "#definitions/v1.Toleration"
+          },
+          "type": "array",
+          "x-kubernetes-patch-strategy": "merge"
+        }
+      },
+      "required": [
+        "mergeStrategy"
+      ]
     },
     "assignments.v1alpha1.PodAssignmentRuleSpec": {
-      "Dependencies": [
-        "assignments.v1alpha1.PodAssignmentRuleScheduling"
-      ],
-      "Schema": {
-        "description": "PodAssignmentRuleSpec defines the behavior of the PodAssignmentRule",
-        "properties": {
-          "scheduling": {
-            "$ref": "assignments.v1alpha1.PodAssignmentRuleScheduling",
-            "description": "Scheduling defines the scheduling objects to be applied to the pod"
-          },
-          "targetLabels": {
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "TargetLabels defines which pods this rule will be applied to. Optional. When not given, the rule will match all pods.",
-            "type": "object"
-          }
+      "description": "PodAssignmentRuleSpec defines the behavior of the PodAssignmentRule",
+      "properties": {
+        "scheduling": {
+          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleScheduling",
+          "description": "Scheduling defines the scheduling objects to be applied to the pod"
         },
-        "required": [
-          "scheduling"
-        ]
-      }
+        "targetLabels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "TargetLabels defines which pods this rule will be applied to. Optional. When not given, the rule will match all pods.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "scheduling"
+      ]
     }
   },
   "info": {

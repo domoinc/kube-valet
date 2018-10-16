@@ -19,17 +19,27 @@ func createDefinitionObj() map[string]interface{} {
 		return spec.Ref{Ref: jsonreference.MustCreateRef(path)}
 	})
 
-	bytes, err := json.MarshalIndent(def, "", "  ")
+	munged := make(map[string]interface{})
+
+	//make openapi spec compliant
+
+	for k := range def {
+		munged[k] = def[k].Schema
+	}
+
+	bytes, err := json.MarshalIndent(munged, "", "  ")
 	if err != nil {
 		panic(err)
 	}
 
 	jsonStr := string(bytes)
 
+	//fix path references
 	jsonStr = strings.Replace(jsonStr, "k8s.io/apimachinery/pkg/apis/meta/", "", -1)
 	jsonStr = strings.Replace(jsonStr, "github.com/domoinc/kube-valet/pkg/apis/", "", -1)
 	jsonStr = strings.Replace(jsonStr, "k8s.io/api/core/", "", -1)
 	jsonStr = strings.Replace(jsonStr, "assignments/v1alpha1", "assignments.v1alpha1", -1)
+	jsonStr = strings.Replace(jsonStr, "$ref\": \"", "$ref\": \"#definitions/", -1)
 
 	var definitions map[string]interface{}
 
