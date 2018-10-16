@@ -7,23 +7,12 @@ spec:
   serviceAccountName: kube-valet
   containers:
   - name: kube-valet
+    # Production systems should use a stable version tag
     image: domoinc/kube-valet:latest
     imagePullPolicy: IfNotPresent
     command:
       - /kube-valet
       - --leader-elect
-    volumeMounts:
-    - mountPath: /etc/kubeconfig
-      name: kube-valet-config
-    - mountPath: /var/log/kube-valet.log
-      name: kube-valet-log
   dnsPolicy: ClusterFirst
   restartPolicy: Always
   terminationGracePeriodSeconds: 30
-  volumes:
-  - name: kube-valet-config
-    hostPath:
-      path: /etc/kube-valet.kubeconfig
-  - name: kube-valet-log
-    hostPath:
-      path: /var/log/kube-valet.log
