@@ -69,9 +69,9 @@ If possible, the command above should be scheduled to run on a regular basis jus
 
 **WARNING** Do not do this until kube-valet is running or the manual initializion command is running as a scheduled task.
 
-First, [Enable Intializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#enable-initializers-alpha-feature) in the `kube-apiserver`
+First, [enable Intializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#enable-initializers-alpha-feature) in the `kube-apiserver`
 
-Then Create the initalizerconfiguration for pods:
+Then, create the initalizerconfiguration for pods:
 
 ```bash
 kubectl create -f deploy/initializerconfiguration.yaml
@@ -97,7 +97,7 @@ See the [examples](./_examples) for example client-go scripts and detailed custo
 
 ## Use Valetctl to Configure Kube-Valet
 
-valetctl is a tool that makes it easier to create and report on kube-valet resources.
+Valetctl is a tool that makes it easier to create and report on kube-valet resources.
 
 ### Install
 
