@@ -13,6 +13,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // NodeAssignmentGroup represents the configuration of a group of nodes that will be auto-labeled
+// +k8s:openapi-gen=true
 type NodeAssignmentGroup struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -26,6 +27,7 @@ type NodeAssignmentGroup struct {
 }
 
 // NodeAssignmentGroupSpec describes the group and it's assignments
+// +k8s:openapi-gen=true
 type NodeAssignmentGroupSpec struct {
 	// TargetLabels is optional. If not provided, the group will match all nodes in the cluster.
 	// +optional
@@ -39,7 +41,7 @@ type NodeAssignmentGroupSpec struct {
 	// Assignments is the array of assignments to be applied. This list should be ordered by the user
 	// with the most important assignments first.
 	// +patchStrategy=merge
-	Assignments []NodeAssignment `json:"assignments,omitempty"`
+	Assignments []NodeAssignment `json:"assignments,omitempty" patchStrategy:"merge"`
 }
 
 const (
@@ -53,6 +55,7 @@ const (
 
 // NodeAssignment describes the assignments possible for the group
 // and the number of nodes for the assignment
+// +k8s:openapi-gen=true
 type NodeAssignment struct {
 	// Name is used when applying the assignment label to the nodes
 	Name string `json:"name,omitempty"`
@@ -85,6 +88,7 @@ type NodeAssignment struct {
 }
 
 // PackLeftScheduling holds configuration for PackLeft assignments
+// +k8s:openapi-gen=true
 type PackLeftScheduling struct {
 	// FullPercent defines percent of the Metric that must be used for a node to be considered "Full"
 	FullPercent *int `json:"fullPercent,omitempty"`
@@ -99,6 +103,7 @@ type PackLeftScheduling struct {
 }
 
 // NodeAssignmentMode defines the operation mode of the rule
+// +k8s:openapi-gen=true
 type NodeAssignmentMode string
 
 const (
@@ -117,6 +122,7 @@ const (
 )
 
 // NodeAssignmentSchedulingMode defines the way to alter scheduling in the assignment
+// +k8s:openapi-gen=true
 type NodeAssignmentSchedulingMode string
 
 const (
@@ -132,6 +138,7 @@ const (
 )
 
 // NodeAssignmentGroupStatus represents the current status of the group.
+// +k8s:openapi-gen=true
 type NodeAssignmentGroupStatus struct {
 	// NumMatched represents the number of nodes that matched the targetlabels
 	NumMatched int64 `json:"numMatched,omitempty"`
@@ -149,6 +156,7 @@ type NodeAssignmentGroupStatus struct {
 }
 
 // NodeAssignmentGroupState reports the overall health of the group
+// +k8s:openapi-gen=true
 type NodeAssignmentGroupState string
 
 const (
@@ -166,6 +174,7 @@ const (
 )
 
 // AssignmentStates reports the satisfaction for each assignment
+// +k8s:openapi-gen=true
 type AssignmentStates struct {
 	// Name is the name of the assignment
 	Name string `json:"name,omitempty"`
@@ -178,6 +187,7 @@ type AssignmentStates struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // NodeAssignmentGroupList is a list of NodeAssignmentGroups
+// +k8s:openapi-gen=true
 type NodeAssignmentGroupList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -193,6 +203,7 @@ type NodeAssignmentGroupList struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // PodAssignmentRule describes pods to match and attributes to apply to them
+// +k8s:openapi-gen=true
 type PodAssignmentRule struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -203,6 +214,7 @@ type PodAssignmentRule struct {
 }
 
 // PodAssignmentRuleSpec defines the behavior of the PodAssignmentRule
+// +k8s:openapi-gen=true
 type PodAssignmentRuleSpec struct {
 
 	// TargetLabels defines which pods this rule will be applied to. Optional.
@@ -215,6 +227,7 @@ type PodAssignmentRuleSpec struct {
 }
 
 // PodAssignmentRuleScheduling defines the scheduling objects to be applied to the pod
+// +k8s:openapi-gen=true
 type PodAssignmentRuleScheduling struct {
 	// MergeStrategy defines the behavior of the rule when pods already have existing
 	// scheduling details defined
@@ -231,11 +244,12 @@ type PodAssignmentRuleScheduling struct {
 	// Tolerations is a list of upstream pod toleration resources
 	// +optional
 	// +patchStrategy=merge
-	Tolerations []corev1.Toleration `json:"tolerations,omitempty"`
+	Tolerations []corev1.Toleration `json:"tolerations,omitempty" patchStrategy:"merge"`
 }
 
 // PodAssignmentRuleSchedulingMergeStrategy defines the behavior of the rule when pods already have existing
 // scheduling details defined
+// +k8s:openapi-gen=true
 type PodAssignmentRuleSchedulingMergeStrategy string
 
 const (
@@ -256,6 +270,7 @@ const (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // PodAssignmentRuleList is a list of PodAssignmentRules
+// +k8s:openapi-gen=true
 type PodAssignmentRuleList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -271,6 +286,7 @@ type PodAssignmentRuleList struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ClusterPodAssignmentRule defines PodAssignmentRules that are applied cluster-wide
+// +k8s:openapi-gen=true
 type ClusterPodAssignmentRule struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
@@ -284,6 +300,7 @@ type ClusterPodAssignmentRule struct {
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // ClusterPodAssignmentRuleList is a list of ClusterPodAssignmentRules
+// +k8s:openapi-gen=true
 type ClusterPodAssignmentRuleList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
