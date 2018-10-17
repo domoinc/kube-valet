@@ -34,6 +34,11 @@ docker-image:
 	docker build -t $(IMAGE):$(VERSION) .
 
 release: docker-image
+	git tag -f $(VERSION) -m "Kube-valet release $(VERSION)"
+
+push-release: release
+	git push github $(VERSION)
+
 	# Push the versioned tag
 	docker push $(IMAGE):$(VERSION)
 
