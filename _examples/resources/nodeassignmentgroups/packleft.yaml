@@ -10,5 +10,5 @@ spec:
   #   label: nag.kube-valet.io/packleft="true"
   defaultAssignment:
     name: default
-    mode: LabelAndTaint
+    mode: LabelOnly
     schedulingMode: PackLeft
