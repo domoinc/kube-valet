@@ -103,6 +103,7 @@ Valetctl is a tool that makes it easier to create and report on kube-valet resou
 
 ```bash
 curl -Lo /usr/local/bin/valetctl https://github.com/domoinc/kube-valet/releases/download/v2018.10.17.0/valetctl
+chmod +x /usr/local/bin/valetctl
 ```
 
 ### Usage Example
