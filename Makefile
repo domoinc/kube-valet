@@ -68,6 +68,7 @@ gen-customresources: clean-customresources
 
 	rm ./pkg/client/openapi/path_template.tmpl
 	rm ./pkg/client/openapi/print_test.go
+	rm ./pkg/client/openapi/openapi_generated.go
 
 	# workaround https://github.com/openshift/origin/issues/10357
 	find pkg/client -name "clientset_generated.go" -exec sed -i'' 's/return \\&Clientset{fakePtr/return \\&Clientset{\\&fakePtr/g' '{}' \;
