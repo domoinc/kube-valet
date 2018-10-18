@@ -1,5 +1,5 @@
 {
-{{range $i, $e := .}}  "/apis/{{$e.Group}}/{{$e.Version}}/namespaces/{namespace}/{{$e.Plural}}": {
+{{range $i, $e := .}}  "/apis/{{$e.Group}}/{{$e.Version}}/{{if .Namespaced}}namespaces/{namespace}/{{end}}{{$e.Plural}}": {
     "get": {
       "description": "list or watch objects of kind {{$e.Name}}",
       "consumes": [
@@ -18,7 +18,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "listNamespaced{{$e.Name}}",
+      "operationId": "list{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
           "uniqueItems": true,
           "type": "string",
@@ -110,7 +110,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "createNamespaced{{$e.Name}}",
+      "operationId": "create{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
         "name": "body",
         "in": "body",
@@ -153,7 +153,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "deleteCollectionNamespaced{{$e.Name}}",
+      "operationId": "deleteCollection{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
           "uniqueItems": true,
           "type": "string",
@@ -232,21 +232,21 @@
     "parameters": [{
         "uniqueItems": true,
         "type": "string",
+        "description": "If 'true', then the output is pretty printed.",
+        "name": "pretty",
+        "in": "query"
+      }{{if .Namespaced}},
+      {
+        "uniqueItems": true,
+        "type": "string",
         "description": "object name and auth scope, such as for teams and projects",
         "name": "namespace",
         "in": "path",
         "required": true
-      },
-      {
-        "uniqueItems": true,
-        "type": "string",
-        "description": "If 'true', then the output is pretty printed.",
-        "name": "pretty",
-        "in": "query"
       }
-    ]
+    {{end}}]
   },
-  "/apis/{{$e.Group}}/{{$e.Version}}/namespaces/{namespace}/{{$e.Plural}}/{name}": {
+  "/apis/{{$e.Group}}/{{$e.Version}}/{{if .Namespaced}}namespaces/{namespace}/{{end}}{{$e.Plural}}/{name}": {
     "get": {
       "description": "read the specified {{$e.Name}}",
       "consumes": [
@@ -263,7 +263,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "readNamespaced{{$e.Name}}",
+      "operationId": "read{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
           "uniqueItems": true,
           "type": "boolean",
@@ -313,7 +313,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "replaceNamespaced{{$e.Name}}",
+      "operationId": "replace{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
         "name": "body",
         "in": "body",
@@ -356,7 +356,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "deleteNamespaced{{$e.Name}}",
+      "operationId": "delete{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
           "name": "body",
           "in": "body",
@@ -423,7 +423,7 @@
       "tags": [
         "{{$e.Group}}_{{$e.Version}}"
       ],
-      "operationId": "patchNamespaced{{$e.Name}}",
+      "operationId": "patch{{if .Namespaced}}Namespaced{{end}}{{$e.Name}}",
       "parameters": [{
         "name": "body",
         "in": "body",
@@ -458,7 +458,7 @@
         "name": "name",
         "in": "path",
         "required": true
-      },
+      },{{if .Namespaced}}
       {
         "uniqueItems": true,
         "type": "string",
@@ -466,7 +466,7 @@
         "name": "namespace",
         "in": "path",
         "required": true
-      },
+      },{{end}}
       {
         "uniqueItems": true,
         "type": "string",

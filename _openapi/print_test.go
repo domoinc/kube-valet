@@ -79,34 +79,38 @@ func createDefinitionObj() map[string]interface{} {
 }
 
 type ApiContext struct {
-	Plural  string
-	Group   string
-	DefRef  string
-	Version string
-	Name    string
+	Plural     string
+	Group      string
+	DefRef     string
+	Version    string
+	Name       string
+	Namespaced bool
 }
 
 var contexts = []ApiContext{
 	ApiContext{
-		Plural:  "nodeassignmentgroups",
-		Group:   "assignments.kube-valet.io",
-		DefRef:  "assignments",
-		Version: "v1alpha1",
-		Name:    "NodeAssignmentGroup",
+		Plural:     "nodeassignmentgroups",
+		Group:      "assignments.kube-valet.io",
+		DefRef:     "assignments",
+		Version:    "v1alpha1",
+		Name:       "NodeAssignmentGroup",
+		Namespaced: false,
 	},
 	ApiContext{
-		Plural:  "podassignmentrules",
-		Group:   "assignments.kube-valet.io",
-		DefRef:  "assignments",
-		Version: "v1alpha1",
-		Name:    "PodAssignmentRule",
+		Plural:     "podassignmentrules",
+		Group:      "assignments.kube-valet.io",
+		DefRef:     "assignments",
+		Version:    "v1alpha1",
+		Name:       "PodAssignmentRule",
+		Namespaced: true,
 	},
 	ApiContext{
-		Plural:  "clusterpodassignmentrules",
-		Group:   "assignments.kube-valet.io",
-		DefRef:  "assignments",
-		Version: "v1alpha1",
-		Name:    "ClusterPodAssignmentRule",
+		Plural:     "clusterpodassignmentrules",
+		Group:      "assignments.kube-valet.io",
+		DefRef:     "assignments",
+		Version:    "v1alpha1",
+		Name:       "ClusterPodAssignmentRule",
+		Namespaced: false,
 	}}
 
 var fns = template.FuncMap{

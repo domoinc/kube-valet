@@ -305,13 +305,13 @@
     "version": "v1alpha1"
   },
   "paths": {
-    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules": {
+    "/apis/assignments.kube-valet.io/v1alpha1/clusterpodassignmentrules": {
       "delete": {
         "consumes": [
           "*/*"
         ],
         "description": "delete collection of ClusterPodAssignmentRule",
-        "operationId": "deleteCollectionNamespacedClusterPodAssignmentRule",
+        "operationId": "deleteCollectionClusterPodAssignmentRule",
         "parameters": [
           {
             "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
@@ -404,7 +404,7 @@
           "*/*"
         ],
         "description": "list or watch objects of kind ClusterPodAssignmentRule",
-        "operationId": "listNamespacedClusterPodAssignmentRule",
+        "operationId": "listClusterPodAssignmentRule",
         "parameters": [
           {
             "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
@@ -496,14 +496,6 @@
       },
       "parameters": [
         {
-          "description": "object name and auth scope, such as for teams and projects",
-          "in": "path",
-          "name": "namespace",
-          "required": true,
-          "type": "string",
-          "uniqueItems": true
-        },
-        {
           "description": "If 'true', then the output is pretty printed.",
           "in": "query",
           "name": "pretty",
@@ -516,7 +508,7 @@
           "*/*"
         ],
         "description": "create a ClusterPodAssignmentRule",
-        "operationId": "createNamespacedClusterPodAssignmentRule",
+        "operationId": "createClusterPodAssignmentRule",
         "parameters": [
           {
             "in": "body",
@@ -557,13 +549,13 @@
         }
       }
     },
-    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules/{name}": {
+    "/apis/assignments.kube-valet.io/v1alpha1/clusterpodassignmentrules/{name}": {
       "delete": {
         "consumes": [
           "*/*"
         ],
         "description": "delete a ClusterPodAssignmentRule",
-        "operationId": "deleteNamespacedClusterPodAssignmentRule",
+        "operationId": "deleteClusterPodAssignmentRule",
         "parameters": [
           {
             "in": "body",
@@ -629,7 +621,7 @@
           "*/*"
         ],
         "description": "read the specified ClusterPodAssignmentRule",
-        "operationId": "readNamespacedClusterPodAssignmentRule",
+        "operationId": "readClusterPodAssignmentRule",
         "parameters": [
           {
             "description": "Should the export be exact.  Exact export maintains cluster-specific fields like 'Namespace'.",
@@ -685,14 +677,6 @@
           "uniqueItems": true
         },
         {
-          "description": "object name and auth scope, such as for teams and projects",
-          "in": "path",
-          "name": "namespace",
-          "required": true,
-          "type": "string",
-          "uniqueItems": true
-        },
-        {
           "description": "If 'true', then the output is pretty printed.",
           "in": "query",
           "name": "pretty",
@@ -707,7 +691,7 @@
           "application/strategic-merge-patch+json"
         ],
         "description": "partially update the specified ClusterPodAssignmentRule",
-        "operationId": "patchNamespacedClusterPodAssignmentRule",
+        "operationId": "patchClusterPodAssignmentRule",
         "parameters": [
           {
             "in": "body",
@@ -753,7 +737,7 @@
           "*/*"
         ],
         "description": "replace the specified ClusterPodAssignmentRule",
-        "operationId": "replaceNamespacedClusterPodAssignmentRule",
+        "operationId": "replaceClusterPodAssignmentRule",
         "parameters": [
           {
             "in": "body",
@@ -790,495 +774,6 @@
         "x-kubernetes-group-version-kind": {
           "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
-          "version": "v1alpha1"
-        }
-      }
-    },
-    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/nodeassignmentgroups": {
-      "delete": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "delete collection of NodeAssignmentGroup",
-        "operationId": "deleteCollectionNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
-            "in": "query",
-            "name": "continue",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
-            "in": "query",
-            "name": "fieldSelector",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "If true, partially initialized resources are included in the response.",
-            "in": "query",
-            "name": "includeUninitialized",
-            "type": "boolean",
-            "uniqueItems": true
-          },
-          {
-            "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
-            "in": "query",
-            "name": "labelSelector",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
-            "in": "query",
-            "name": "limit",
-            "type": "integer",
-            "uniqueItems": true
-          },
-          {
-            "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
-            "in": "query",
-            "name": "resourceVersion",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "Timeout for the list/watch call.",
-            "in": "query",
-            "name": "timeoutSeconds",
-            "type": "integer",
-            "uniqueItems": true
-          },
-          {
-            "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
-            "in": "query",
-            "name": "watch",
-            "type": "boolean",
-            "uniqueItems": true
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/v1.Status"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "deletecollection",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      },
-      "get": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "list or watch objects of kind NodeAssignmentGroup",
-        "operationId": "listNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
-            "in": "query",
-            "name": "continue",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
-            "in": "query",
-            "name": "fieldSelector",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "If true, partially initialized resources are included in the response.",
-            "in": "query",
-            "name": "includeUninitialized",
-            "type": "boolean",
-            "uniqueItems": true
-          },
-          {
-            "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
-            "in": "query",
-            "name": "labelSelector",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
-            "in": "query",
-            "name": "limit",
-            "type": "integer",
-            "uniqueItems": true
-          },
-          {
-            "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
-            "in": "query",
-            "name": "resourceVersion",
-            "type": "string",
-            "uniqueItems": true
-          },
-          {
-            "description": "Timeout for the list/watch call.",
-            "in": "query",
-            "name": "timeoutSeconds",
-            "type": "integer",
-            "uniqueItems": true
-          },
-          {
-            "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
-            "in": "query",
-            "name": "watch",
-            "type": "boolean",
-            "uniqueItems": true
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf",
-          "application/json;stream=watch",
-          "application/vnd.kubernetes.protobuf;stream=watch"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroupList"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "list",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      },
-      "parameters": [
-        {
-          "description": "object name and auth scope, such as for teams and projects",
-          "in": "path",
-          "name": "namespace",
-          "required": true,
-          "type": "string",
-          "uniqueItems": true
-        },
-        {
-          "description": "If 'true', then the output is pretty printed.",
-          "in": "query",
-          "name": "pretty",
-          "type": "string",
-          "uniqueItems": true
-        }
-      ],
-      "post": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "create a NodeAssignmentGroup",
-        "operationId": "createNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "post",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      }
-    },
-    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/nodeassignmentgroups/{name}": {
-      "delete": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "delete a NodeAssignmentGroup",
-        "operationId": "deleteNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1.DeleteOptions"
-            }
-          },
-          {
-            "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
-            "in": "query",
-            "name": "gracePeriodSeconds",
-            "type": "integer",
-            "uniqueItems": true
-          },
-          {
-            "description": "Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the \"orphan\" finalizer will be added to/removed from the object's finalizers list. Either this field or PropagationPolicy may be set, but not both.",
-            "in": "query",
-            "name": "orphanDependents",
-            "type": "boolean",
-            "uniqueItems": true
-          },
-          {
-            "description": "Whether and how garbage collection will be performed. Either this field or OrphanDependents may be set, but not both. The default policy is decided by the existing finalizer set in the metadata.finalizers and the resource-specific default policy.",
-            "in": "query",
-            "name": "propagationPolicy",
-            "type": "string",
-            "uniqueItems": true
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/v1.Status"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "delete",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      },
-      "get": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "read the specified NodeAssignmentGroup",
-        "operationId": "readNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "description": "Should the export be exact.  Exact export maintains cluster-specific fields like 'Namespace'.",
-            "in": "query",
-            "name": "exact",
-            "type": "boolean",
-            "uniqueItems": true
-          },
-          {
-            "description": "Should this value be exported.  Export strips fields that a user can not specify.",
-            "in": "query",
-            "name": "export",
-            "type": "boolean",
-            "uniqueItems": true
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "get",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      },
-      "parameters": [
-        {
-          "description": "name of the NodeAssignmentGroup",
-          "in": "path",
-          "name": "name",
-          "required": true,
-          "type": "string",
-          "uniqueItems": true
-        },
-        {
-          "description": "object name and auth scope, such as for teams and projects",
-          "in": "path",
-          "name": "namespace",
-          "required": true,
-          "type": "string",
-          "uniqueItems": true
-        },
-        {
-          "description": "If 'true', then the output is pretty printed.",
-          "in": "query",
-          "name": "pretty",
-          "type": "string",
-          "uniqueItems": true
-        }
-      ],
-      "patch": {
-        "consumes": [
-          "application/json-patch+json",
-          "application/merge-patch+json",
-          "application/strategic-merge-patch+json"
-        ],
-        "description": "partially update the specified NodeAssignmentGroup",
-        "operationId": "patchNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "description": "Patch is provided to give a concrete name and type to the Kubernetes PATCH request body.",
-              "type": "object"
-            }
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "patch",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
-          "version": "v1alpha1"
-        }
-      },
-      "put": {
-        "consumes": [
-          "*/*"
-        ],
-        "description": "replace the specified NodeAssignmentGroup",
-        "operationId": "replaceNamespacedNodeAssignmentGroup",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          }
-        ],
-        "produces": [
-          "application/json",
-          "application/yaml",
-          "application/vnd.kubernetes.protobuf"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "schemes": [
-          "https"
-        ],
-        "tags": [
-          "assignments.kube-valet.io_v1alpha1"
-        ],
-        "x-kubernetes-action": "put",
-        "x-kubernetes-group-version-kind": {
-          "group": "assignments.kube-valet.io",
-          "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
       }
@@ -1474,17 +969,17 @@
       },
       "parameters": [
         {
-          "description": "object name and auth scope, such as for teams and projects",
-          "in": "path",
-          "name": "namespace",
-          "required": true,
+          "description": "If 'true', then the output is pretty printed.",
+          "in": "query",
+          "name": "pretty",
           "type": "string",
           "uniqueItems": true
         },
         {
-          "description": "If 'true', then the output is pretty printed.",
-          "in": "query",
-          "name": "pretty",
+          "description": "object name and auth scope, such as for teams and projects",
+          "in": "path",
+          "name": "namespace",
+          "required": true,
           "type": "string",
           "uniqueItems": true
         }
@@ -1768,6 +1263,479 @@
         "x-kubernetes-group-version-kind": {
           "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
+          "version": "v1alpha1"
+        }
+      }
+    },
+    "/apis/assignments.kube-valet.io/v1alpha1/nodeassignmentgroups": {
+      "delete": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "delete collection of NodeAssignmentGroup",
+        "operationId": "deleteCollectionNodeAssignmentGroup",
+        "parameters": [
+          {
+            "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+            "in": "query",
+            "name": "continue",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+            "in": "query",
+            "name": "fieldSelector",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "If true, partially initialized resources are included in the response.",
+            "in": "query",
+            "name": "includeUninitialized",
+            "type": "boolean",
+            "uniqueItems": true
+          },
+          {
+            "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+            "in": "query",
+            "name": "labelSelector",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "uniqueItems": true
+          },
+          {
+            "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+            "in": "query",
+            "name": "resourceVersion",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "Timeout for the list/watch call.",
+            "in": "query",
+            "name": "timeoutSeconds",
+            "type": "integer",
+            "uniqueItems": true
+          },
+          {
+            "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+            "in": "query",
+            "name": "watch",
+            "type": "boolean",
+            "uniqueItems": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/v1.Status"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "deletecollection",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      },
+      "get": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "list or watch objects of kind NodeAssignmentGroup",
+        "operationId": "listNodeAssignmentGroup",
+        "parameters": [
+          {
+            "description": "The continue option should be set when retrieving more results from the server. Since this value is server defined, clients may only use the continue value from a previous query result with identical query parameters (except for the value of continue) and the server may reject a continue value it does not recognize. If the specified continue value is no longer valid whether due to expiration (generally five to fifteen minutes) or a configuration change on the server the server will respond with a 410 ResourceExpired error indicating the client must restart their list without the continue field. This field is not supported when watch is true. Clients may start a watch from the last resourceVersion value returned by the server and not miss any modifications.",
+            "in": "query",
+            "name": "continue",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "A selector to restrict the list of returned objects by their fields. Defaults to everything.",
+            "in": "query",
+            "name": "fieldSelector",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "If true, partially initialized resources are included in the response.",
+            "in": "query",
+            "name": "includeUninitialized",
+            "type": "boolean",
+            "uniqueItems": true
+          },
+          {
+            "description": "A selector to restrict the list of returned objects by their labels. Defaults to everything.",
+            "in": "query",
+            "name": "labelSelector",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "limit is a maximum number of responses to return for a list call. If more items exist, the server will set the `continue` field on the list metadata to a value that can be used with the same initial query to retrieve the next set of results. Setting a limit may return fewer than the requested amount of items (up to zero items) in the event all requested objects are filtered out and clients should only use the presence of the continue field to determine whether more results are available. Servers may choose not to support the limit argument and will return all of the available results. If limit is specified and the continue field is empty, clients may assume that no more results are available. This field is not supported if watch is true.\n\nThe server guarantees that the objects returned when using continue will be identical to issuing a single list call without a limit - that is, no objects created, modified, or deleted after the first request is issued will be included in any subsequent continued requests. This is sometimes referred to as a consistent snapshot, and ensures that a client that is using limit to receive smaller chunks of a very large result can ensure they see all possible objects. If objects are updated during a chunked list the version of the object that was present at the time the first list result was calculated is returned.",
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "uniqueItems": true
+          },
+          {
+            "description": "When specified with a watch call, shows changes that occur after that particular version of a resource. Defaults to changes from the beginning of history. When specified for list: - if unset, then the result is returned from remote storage based on quorum-read flag; - if it's 0, then we simply return what we currently have in cache, no guarantee; - if set to non zero, then the result is at least as fresh as given rv.",
+            "in": "query",
+            "name": "resourceVersion",
+            "type": "string",
+            "uniqueItems": true
+          },
+          {
+            "description": "Timeout for the list/watch call.",
+            "in": "query",
+            "name": "timeoutSeconds",
+            "type": "integer",
+            "uniqueItems": true
+          },
+          {
+            "description": "Watch for changes to the described resources and return them as a stream of add, update, and remove notifications. Specify resourceVersion.",
+            "in": "query",
+            "name": "watch",
+            "type": "boolean",
+            "uniqueItems": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf",
+          "application/json;stream=watch",
+          "application/vnd.kubernetes.protobuf;stream=watch"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroupList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "list",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      },
+      "parameters": [
+        {
+          "description": "If 'true', then the output is pretty printed.",
+          "in": "query",
+          "name": "pretty",
+          "type": "string",
+          "uniqueItems": true
+        }
+      ],
+      "post": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "create a NodeAssignmentGroup",
+        "operationId": "createNodeAssignmentGroup",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "post",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      }
+    },
+    "/apis/assignments.kube-valet.io/v1alpha1/nodeassignmentgroups/{name}": {
+      "delete": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "delete a NodeAssignmentGroup",
+        "operationId": "deleteNodeAssignmentGroup",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.DeleteOptions"
+            }
+          },
+          {
+            "description": "The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately.",
+            "in": "query",
+            "name": "gracePeriodSeconds",
+            "type": "integer",
+            "uniqueItems": true
+          },
+          {
+            "description": "Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the \"orphan\" finalizer will be added to/removed from the object's finalizers list. Either this field or PropagationPolicy may be set, but not both.",
+            "in": "query",
+            "name": "orphanDependents",
+            "type": "boolean",
+            "uniqueItems": true
+          },
+          {
+            "description": "Whether and how garbage collection will be performed. Either this field or OrphanDependents may be set, but not both. The default policy is decided by the existing finalizer set in the metadata.finalizers and the resource-specific default policy.",
+            "in": "query",
+            "name": "propagationPolicy",
+            "type": "string",
+            "uniqueItems": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/v1.Status"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "delete",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      },
+      "get": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "read the specified NodeAssignmentGroup",
+        "operationId": "readNodeAssignmentGroup",
+        "parameters": [
+          {
+            "description": "Should the export be exact.  Exact export maintains cluster-specific fields like 'Namespace'.",
+            "in": "query",
+            "name": "exact",
+            "type": "boolean",
+            "uniqueItems": true
+          },
+          {
+            "description": "Should this value be exported.  Export strips fields that a user can not specify.",
+            "in": "query",
+            "name": "export",
+            "type": "boolean",
+            "uniqueItems": true
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "get",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      },
+      "parameters": [
+        {
+          "description": "name of the NodeAssignmentGroup",
+          "in": "path",
+          "name": "name",
+          "required": true,
+          "type": "string",
+          "uniqueItems": true
+        },
+        {
+          "description": "If 'true', then the output is pretty printed.",
+          "in": "query",
+          "name": "pretty",
+          "type": "string",
+          "uniqueItems": true
+        }
+      ],
+      "patch": {
+        "consumes": [
+          "application/json-patch+json",
+          "application/merge-patch+json",
+          "application/strategic-merge-patch+json"
+        ],
+        "description": "partially update the specified NodeAssignmentGroup",
+        "operationId": "patchNodeAssignmentGroup",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "description": "Patch is provided to give a concrete name and type to the Kubernetes PATCH request body.",
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "patch",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      },
+      "put": {
+        "consumes": [
+          "*/*"
+        ],
+        "description": "replace the specified NodeAssignmentGroup",
+        "operationId": "replaceNodeAssignmentGroup",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/yaml",
+          "application/vnd.kubernetes.protobuf"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "tags": [
+          "assignments.kube-valet.io_v1alpha1"
+        ],
+        "x-kubernetes-action": "put",
+        "x-kubernetes-group-version-kind": {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
       }
