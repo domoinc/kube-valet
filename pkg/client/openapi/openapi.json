@@ -26,15 +26,19 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ObjectMeta"
+          "$ref": "#/definitions/v1.ObjectMeta"
         },
         "spec": {
-          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
+          "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
           "description": "Spec defines the behavior of the rule"
         }
       },
-      "required": [
-        "spec"
+      "x-kubernetes-group-version-kind": [
+        {
+          "group": "assignments.kube-valet.io",
+          "kind": "PodAssignmentRule",
+          "version": "v1alpha1"
+        }
       ]
     },
     "assignments.v1alpha1.ClusterPodAssignmentRuleList": {
@@ -46,7 +50,7 @@
         },
         "items": {
           "items": {
-            "$ref": "#definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
+            "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
           },
           "type": "array"
         },
@@ -55,12 +59,9 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ListMeta"
+          "$ref": "#/definitions/v1.ListMeta"
         }
-      },
-      "required": [
-        "items"
-      ]
+      }
     },
     "assignments.v1alpha1.NodeAssignment": {
       "description": "NodeAssignment describes the assignments possible for the group and the number of nodes for the assignment",
@@ -79,7 +80,7 @@
           "type": "integer"
         },
         "packLeft": {
-          "$ref": "#definitions/assignments.v1alpha1.PackLeftScheduling",
+          "$ref": "#/definitions/assignments.v1alpha1.PackLeftScheduling",
           "description": "PackLeft holds configuration options and values here are only used when the SchedulingMode is \"PackLeft\""
         },
         "percentDesired": {
@@ -109,17 +110,24 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ObjectMeta"
+          "$ref": "#/definitions/v1.ObjectMeta"
         },
         "spec": {
-          "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroupSpec",
+          "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroupSpec",
           "description": "Spec defines the group and it's assignments"
         },
         "status": {
-          "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroupStatus",
+          "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroupStatus",
           "description": "Status represents the current status of the group assignments."
         }
-      }
+      },
+      "x-kubernetes-group-version-kind": [
+        {
+          "group": "assignments.kube-valet.io",
+          "kind": "NodeAssignmentGroup",
+          "version": "v1alpha1"
+        }
+      ]
     },
     "assignments.v1alpha1.NodeAssignmentGroupList": {
       "description": "NodeAssignmentGroupList is a list of NodeAssignmentGroups",
@@ -131,7 +139,7 @@
         "items": {
           "description": "Items is a list of NodeAssignmentGroups",
           "items": {
-            "$ref": "#definitions/assignments.v1alpha1.NodeAssignmentGroup"
+            "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
           },
           "type": "array"
         },
@@ -140,12 +148,9 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ListMeta"
+          "$ref": "#/definitions/v1.ListMeta"
         }
-      },
-      "required": [
-        "items"
-      ]
+      }
     },
     "assignments.v1alpha1.NodeAssignmentGroupSpec": {
       "description": "NodeAssignmentGroupSpec describes the group and it's assignments",
@@ -153,13 +158,13 @@
         "assignments": {
           "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first.",
           "items": {
-            "$ref": "#definitions/assignments.v1alpha1.NodeAssignment"
+            "$ref": "#/definitions/assignments.v1alpha1.NodeAssignment"
           },
           "type": "array",
           "x-kubernetes-patch-strategy": "merge"
         },
         "defaultAssignment": {
-          "$ref": "#definitions/assignments.v1alpha1.NodeAssignment",
+          "$ref": "#/definitions/assignments.v1alpha1.NodeAssignment",
           "description": "Assignments is the array of assignments to be applied. This list should be ordered by the user with the most important assignments first."
         },
         "targetLabels": {
@@ -213,15 +218,19 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ObjectMeta"
+          "$ref": "#/definitions/v1.ObjectMeta"
         },
         "spec": {
-          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
+          "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRuleSpec",
           "description": "Spec defines the behavior of the rule"
         }
       },
-      "required": [
-        "spec"
+      "x-kubernetes-group-version-kind": [
+        {
+          "group": "assignments.kube-valet.io",
+          "kind": "PodAssignmentRule",
+          "version": "v1alpha1"
+        }
       ]
     },
     "assignments.v1alpha1.PodAssignmentRuleList": {
@@ -233,7 +242,7 @@
         },
         "items": {
           "items": {
-            "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRule"
+            "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
           },
           "type": "array"
         },
@@ -242,18 +251,15 @@
           "type": "string"
         },
         "metadata": {
-          "$ref": "#definitions/v1.ListMeta"
+          "$ref": "#/definitions/v1.ListMeta"
         }
-      },
-      "required": [
-        "items"
-      ]
+      }
     },
     "assignments.v1alpha1.PodAssignmentRuleScheduling": {
       "description": "PodAssignmentRuleScheduling defines the scheduling objects to be applied to the pod",
       "properties": {
         "affinity": {
-          "$ref": "#definitions/v1.Affinity",
+          "$ref": "#/definitions/v1.Affinity",
           "description": "Affinity is the upstream pod affinity resource"
         },
         "mergeStrategy": {
@@ -270,21 +276,18 @@
         "tolerations": {
           "description": "Tolerations is a list of upstream pod toleration resources",
           "items": {
-            "$ref": "#definitions/v1.Toleration"
+            "$ref": "#/definitions/v1.Toleration"
           },
           "type": "array",
           "x-kubernetes-patch-strategy": "merge"
         }
-      },
-      "required": [
-        "mergeStrategy"
-      ]
+      }
     },
     "assignments.v1alpha1.PodAssignmentRuleSpec": {
       "description": "PodAssignmentRuleSpec defines the behavior of the PodAssignmentRule",
       "properties": {
         "scheduling": {
-          "$ref": "#definitions/assignments.v1alpha1.PodAssignmentRuleScheduling",
+          "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRuleScheduling",
           "description": "Scheduling defines the scheduling objects to be applied to the pod"
         },
         "targetLabels": {
@@ -294,10 +297,7 @@
           "description": "TargetLabels defines which pods this rule will be applied to. Optional. When not given, the rule will match all pods.",
           "type": "object"
         }
-      },
-      "required": [
-        "scheduling"
-      ]
+      }
     }
   },
   "info": {
@@ -305,7 +305,7 @@
     "version": "v1alpha1"
   },
   "paths": {
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules": {
       "delete": {
         "consumes": [
           "*/*"
@@ -390,11 +390,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "deletecollection",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -474,7 +474,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRuleList"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRuleList"
             }
           },
           "401": {
@@ -485,11 +485,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "list",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -523,7 +523,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           }
         ],
@@ -536,7 +536,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           },
           "401": {
@@ -547,17 +547,17 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "post",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
       }
     },
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules/{name}": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/clusterpodassignmentrules/{name}": {
       "delete": {
         "consumes": [
           "*/*"
@@ -615,11 +615,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "delete",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -655,7 +655,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           },
           "401": {
@@ -666,11 +666,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "get",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -728,7 +728,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           },
           "401": {
@@ -739,11 +739,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "patch",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -760,7 +760,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           }
         ],
@@ -773,7 +773,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.ClusterPodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.ClusterPodAssignmentRule"
             }
           },
           "401": {
@@ -784,17 +784,17 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "put",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "ClusterPodAssignmentRule",
           "version": "v1alpha1"
         }
       }
     },
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/nodeassignmentgroups": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/nodeassignmentgroups": {
       "delete": {
         "consumes": [
           "*/*"
@@ -879,11 +879,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "deletecollection",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
@@ -963,7 +963,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroupList"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroupList"
             }
           },
           "401": {
@@ -974,11 +974,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "list",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
@@ -1012,7 +1012,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           }
         ],
@@ -1025,7 +1025,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           },
           "401": {
@@ -1036,17 +1036,17 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "post",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
       }
     },
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/nodeassignmentgroups/{name}": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/nodeassignmentgroups/{name}": {
       "delete": {
         "consumes": [
           "*/*"
@@ -1104,11 +1104,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "delete",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
@@ -1144,7 +1144,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           },
           "401": {
@@ -1155,11 +1155,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "get",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
@@ -1217,7 +1217,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           },
           "401": {
@@ -1228,11 +1228,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "patch",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
@@ -1249,7 +1249,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           }
         ],
@@ -1262,7 +1262,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.NodeAssignmentGroup"
+              "$ref": "#/definitions/assignments.v1alpha1.NodeAssignmentGroup"
             }
           },
           "401": {
@@ -1273,17 +1273,17 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "put",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "NodeAssignmentGroup",
           "version": "v1alpha1"
         }
       }
     },
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/podassignmentrules": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/podassignmentrules": {
       "delete": {
         "consumes": [
           "*/*"
@@ -1368,11 +1368,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "deletecollection",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -1452,7 +1452,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRuleList"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRuleList"
             }
           },
           "401": {
@@ -1463,11 +1463,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "list",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -1501,7 +1501,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           }
         ],
@@ -1514,7 +1514,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           },
           "401": {
@@ -1525,17 +1525,17 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "post",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
       }
     },
-    "/apis/assignment/v1alpha1/namespaces/{namespace}/podassignmentrules/{name}": {
+    "/apis/assignments.kube-valet.io/v1alpha1/namespaces/{namespace}/podassignmentrules/{name}": {
       "delete": {
         "consumes": [
           "*/*"
@@ -1593,11 +1593,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "delete",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -1633,7 +1633,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           },
           "401": {
@@ -1644,11 +1644,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "get",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -1706,7 +1706,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           },
           "401": {
@@ -1717,11 +1717,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "patch",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }
@@ -1738,7 +1738,7 @@
             "name": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           }
         ],
@@ -1751,7 +1751,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/assignment.v1alpha1.PodAssignmentRule"
+              "$ref": "#/definitions/assignments.v1alpha1.PodAssignmentRule"
             }
           },
           "401": {
@@ -1762,11 +1762,11 @@
           "https"
         ],
         "tags": [
-          "assignment_v1alpha1"
+          "assignments.kube-valet.io_v1alpha1"
         ],
         "x-kubernetes-action": "put",
         "x-kubernetes-group-version-kind": {
-          "group": "assignment",
+          "group": "assignments.kube-valet.io",
           "kind": "PodAssignmentRule",
           "version": "v1alpha1"
         }

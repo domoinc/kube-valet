@@ -3,7 +3,6 @@ package openapi
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -22,9 +21,39 @@ func createDefinitionObj() map[string]interface{} {
 	munged := make(map[string]interface{})
 
 	//make openapi spec compliant
-
 	for k := range def {
-		munged[k] = def[k].Schema
+		munged[k] = map[string]interface{}{
+			"description": def[k].Schema.Description,
+			"properties":  def[k].Schema.Properties,
+		}
+
+		if strings.HasSuffix(k, "NodeAssignmentGroup") {
+			munged[k].(map[string]interface{})["x-kubernetes-group-version-kind"] = []map[string]string{
+				map[string]string{
+					"group":   "assignments.kube-valet.io",
+					"kind":    "NodeAssignmentGroup",
+					"version": "v1alpha1",
+				},
+			}
+		}
+		if strings.HasSuffix(k, "ClusterPodAssignmentRule") {
+			munged[k].(map[string]interface{})["x-kubernetes-group-version-kind"] = []map[string]string{
+				map[string]string{
+					"group":   "assignments.kube-valet.io",
+					"kind":    "ClusterPodAssignmentRule",
+					"version": "v1alpha1",
+				},
+			}
+		}
+		if strings.HasSuffix(k, "PodAssignmentRule") {
+			munged[k].(map[string]interface{})["x-kubernetes-group-version-kind"] = []map[string]string{
+				map[string]string{
+					"group":   "assignments.kube-valet.io",
+					"kind":    "PodAssignmentRule",
+					"version": "v1alpha1",
+				},
+			}
+		}
 	}
 
 	bytes, err := json.MarshalIndent(munged, "", "  ")
@@ -39,7 +68,7 @@ func createDefinitionObj() map[string]interface{} {
 	jsonStr = strings.Replace(jsonStr, "github.com/domoinc/kube-valet/pkg/apis/", "", -1)
 	jsonStr = strings.Replace(jsonStr, "k8s.io/api/core/", "", -1)
 	jsonStr = strings.Replace(jsonStr, "assignments/v1alpha1", "assignments.v1alpha1", -1)
-	jsonStr = strings.Replace(jsonStr, "$ref\": \"", "$ref\": \"#definitions/", -1)
+	jsonStr = strings.Replace(jsonStr, "$ref\": \"", "$ref\": \"#/definitions/", -1)
 
 	var definitions map[string]interface{}
 
@@ -52,6 +81,7 @@ func createDefinitionObj() map[string]interface{} {
 type ApiContext struct {
 	Plural  string
 	Group   string
+	DefRef  string
 	Version string
 	Name    string
 }
@@ -59,19 +89,22 @@ type ApiContext struct {
 var contexts = []ApiContext{
 	ApiContext{
 		Plural:  "nodeassignmentgroups",
-		Group:   "assignment",
+		Group:   "assignments.kube-valet.io",
+		DefRef:  "assignments",
 		Version: "v1alpha1",
 		Name:    "NodeAssignmentGroup",
 	},
 	ApiContext{
 		Plural:  "podassignmentrules",
-		Group:   "assignment",
+		Group:   "assignments.kube-valet.io",
+		DefRef:  "assignments",
 		Version: "v1alpha1",
 		Name:    "PodAssignmentRule",
 	},
 	ApiContext{
 		Plural:  "clusterpodassignmentrules",
-		Group:   "assignment",
+		Group:   "assignments.kube-valet.io",
+		DefRef:  "assignments",
 		Version: "v1alpha1",
 		Name:    "ClusterPodAssignmentRule",
 	}}
@@ -98,8 +131,6 @@ func createPathObj() map[string]interface{} {
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Printf("found bytes %s %d\n", string(pathBytes.Bytes()), pathBytes.Len())
 
 	paths := make(map[string]interface{})
 
