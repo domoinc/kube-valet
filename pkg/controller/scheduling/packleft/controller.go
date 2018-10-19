@@ -8,6 +8,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
+	"github.com/domoinc/kube-valet/pkg/metrics"
 	"github.com/domoinc/kube-valet/pkg/queues"
 	"github.com/domoinc/kube-valet/pkg/utils"
 )
@@ -21,6 +22,7 @@ type Controller struct {
 	nagIndex       cache.Indexer
 	nodeIndex      cache.Indexer
 	log            *logging.Logger
+	registry       *metrics.Registry
 }
 
 // NewController creates a new packleft.Controller
@@ -31,6 +33,7 @@ func NewController(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cac
 		nagIndex:  nagIndex,
 		nodeIndex: nodeIndex,
 		log:       logging.MustGetLogger("PackLeftSchedulingController"),
+		registry:  metrics.NewRegistry(),
 	}
 }
 
@@ -39,6 +42,9 @@ func (plc *Controller) Run() {
 	plc.queue.Run(func(obj interface{}) error {
 		nag := obj.(*assignmentsv1alpha1.NodeAssignmentGroup)
 		plc.log.Debugf("processing business logic for nag %s", nag.Name)
+		//reset nag metrics
+		metric := plc.registry.GetPackLeftPercentFull(nag.Name)
+		metric.Reset()
 		if nag.GetDeletionTimestamp() != nil {
 			if err := plc.plm.CleanAllNodes(nag); err != nil {
 				return err
@@ -47,7 +53,7 @@ func (plc *Controller) Run() {
 				return err
 			}
 		} else {
-			plc.plm.RebalanceNag(nag)
+			plc.plm.RebalanceNag(nag, metric)
 			//clean up nodes that are no longer part of the nag but have labels
 			plc.plm.CleanUnassignedNodes(nag)
 		}

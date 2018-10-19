@@ -1,5 +1,5 @@
-hash: 78df86484a8c0ff02f908bb8f09e3dc1bf0d4e089a153308d5b60ec56b124a0b
-updated: 2018-10-04T13:44:15.104753377-06:00
+hash: 89f9cc3385cffe37fb7cf7ab6352fbcb5b856511ce1408f77d7f4b53d1168b4c
+updated: 2018-10-18T15:45:20.48698432-06:00
 imports:
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
@@ -79,9 +79,11 @@ imports:
   - jlexer
   - jwriter
 - name: github.com/op/go-logging
-  version: 970db520ece77730c7e4724c61121037378659d9
+  version: b2cb9fa56473e98db8caba80237377e83fe44db5
 - name: github.com/peterbourgon/diskv
   version: 5f041e8faa004a95c88a202771f4cc3e991971e6
+- name: github.com/prometheus/client_golang
+  version: 1cafe34db7fdec6022e17e00e1c1ea501022f3e4
 - name: github.com/PuerkitoBio/purell
   version: 8a290539e2e8629dbc4e6bad948158f790ec31f4
 - name: github.com/PuerkitoBio/urlesc
@@ -202,6 +204,7 @@ imports:
   version: 2ae454230481a7cb5544325e12ad7658ecccd19b
   subpackages:
   - discovery
+  - discovery/fake
   - kubernetes
   - kubernetes/scheme
   - kubernetes/typed/admissionregistration/v1alpha1
@@ -231,6 +234,7 @@ imports:
   - pkg/version
   - rest
   - rest/watch
+  - testing
   - tools/auth
   - tools/cache
   - tools/clientcmd
