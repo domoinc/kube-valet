@@ -9,6 +9,7 @@ import (
 	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/utils"
 	logging "github.com/op/go-logging"
+	"github.com/prometheus/client_golang/prometheus"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -45,7 +46,7 @@ func NewManager(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.
 }
 
 // RebalanceNag rebalance nodes that are assigned to pack left assignments in a given nag
-func (m *Manager) RebalanceNag(nag *assignmentsv1alpha1.NodeAssignmentGroup) {
+func (m *Manager) RebalanceNag(nag *assignmentsv1alpha1.NodeAssignmentGroup, metric *prometheus.GaugeVec) {
 	// Ensure that the finalizer is set on the nag
 	m.ensureFinalizer(nag)
 
@@ -56,7 +57,7 @@ func (m *Manager) RebalanceNag(nag *assignmentsv1alpha1.NodeAssignmentGroup) {
 			m.log.Infof("rebalancing  %d nodes in assignment %s.%s", len(nodes), nag.Name, assignmentName)
 			labelKey := getLabelKey(nag.Name)
 			if assignment, ok := m.getAssignmentByName(assignmentName, nag); ok {
-				m.balanceNodes(nodes, labelKey, nag, assignment)
+				m.balanceNodes(nodes, labelKey, nag, assignment, metric)
 			} else {
 				m.log.Warningf("Assignment %s doesn't exist in the NodeAssignmentGroup", assignmentName)
 			}
@@ -128,20 +129,22 @@ func (m *Manager) NodeHasPackLeftAssignment(node *corev1.Node, nag *assignmentsv
 	return false
 }
 
-type nodeWithPercent struct {
+type assignmentContext struct {
 	percentFull float64
 	node        *corev1.Node
+	assignment  *assignmentsv1alpha1.NodeAssignment
 }
 
-func newNodeWithPercent(percent float64, node *corev1.Node) *nodeWithPercent {
-	return &nodeWithPercent{
+func newAssignmentContext(percent float64, node *corev1.Node, assignment *assignmentsv1alpha1.NodeAssignment) *assignmentContext {
+	return &assignmentContext{
 		percentFull: percent,
 		node:        node,
+		assignment:  assignment,
 	}
 }
 
-func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assignmentsv1alpha1.NodeAssignmentGroup, assignment *assignmentsv1alpha1.NodeAssignment) {
-	var nodesWithPercent []*nodeWithPercent
+func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assignmentsv1alpha1.NodeAssignmentGroup, assignment *assignmentsv1alpha1.NodeAssignment, metric *prometheus.GaugeVec) {
+	var nodesWithPercent []*assignmentContext
 	//create this first so it doesn't get created twice for every node
 	podsOnNodes := m.getPodsOnNodes()
 	for _, node := range nodes {
@@ -153,7 +156,7 @@ func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assig
 		} else {
 			percentFull = cpuFull
 		}
-		nodesWithPercent = append(nodesWithPercent, newNodeWithPercent(percentFull, node))
+		nodesWithPercent = append(nodesWithPercent, newAssignmentContext(percentFull, node, assignment))
 	}
 	// sort the nodes by fullest first
 	// must be deterministic when values are equal otherwise there might be state thrashing
@@ -195,7 +198,7 @@ func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assig
 
 	firstCtx := nodesWithPercent[0]
 	m.log.Debugf("assigning node %s to be first full node", firstCtx.node.Name)
-	firstNode := m.assignNode(firstCtx.node, nodeUse, labelKey)
+	firstNode := m.assignNode(firstCtx, nodeUse, labelKey, metric)
 	m.patchNodeState(firstCtx.node, firstNode)
 
 	for _, ctx := range nodesWithPercent[1:] {
@@ -203,14 +206,14 @@ func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assig
 		// these calls actually save the data to kubernetes
 		if ctx.percentFull > fullPercent {
 			m.log.Debugf("assigned node %s to be Use", ctx.node.Name)
-			newNode = m.assignNode(ctx.node, nodeUse, labelKey)
+			newNode = m.assignNode(ctx, nodeUse, labelKey, metric)
 		} else if avoidCount < avoidBufferSize {
 			m.log.Debugf("assigned node %s to be Avoid", ctx.node.Name)
-			newNode = m.assignNode(ctx.node, nodeAvoid, labelKey)
+			newNode = m.assignNode(ctx, nodeAvoid, labelKey, metric)
 			avoidCount++
 		} else {
 			m.log.Debugf("assigned node %s to be Deny", ctx.node.Name)
-			newNode = m.assignNode(ctx.node, nodeDeny, labelKey)
+			newNode = m.assignNode(ctx, nodeDeny, labelKey, metric)
 			denyCount++
 		}
 		m.patchNodeState(ctx.node, newNode)
@@ -277,9 +280,11 @@ func (m *Manager) unassignNode(node *corev1.Node, labelKey string) *corev1.Node 
 // Full nodes have no taint
 // Filling nodes have a PreferNoSchedule taint
 // Emptying nodes have a NoScheduleTaint
-func (m *Manager) assignNode(node *corev1.Node, state nodePackLeftState, labelKey string) *corev1.Node {
+func (m *Manager) assignNode(ctx *assignmentContext, state nodePackLeftState, labelKey string, metric *prometheus.GaugeVec) *corev1.Node {
 
-	newNode := node.DeepCopy()
+	metric.With(prometheus.Labels{"node_assignment": ctx.assignment.Name, "node_name": ctx.node.Name, "pack_left_state": string(state)}).Set(ctx.percentFull)
+
+	newNode := ctx.node.DeepCopy()
 
 	//replace label
 	newNode.ObjectMeta.Labels[labelKey] = string(state)

@@ -54,7 +54,7 @@ func (m *Manager) GetPodAssignmentsScheduling(pod *corev1.Pod) []*assignmentsv1a
 			r = append(r, obj.(*assignmentsv1alpha1.ClusterPodAssignmentRule).Spec.Scheduling.DeepCopy())
 		}
 	}); err != nil {
-		m.log.Error(err)
+		m.log.Errorf("Unable to get Non-Namespaced pod assignment scheduling %s", err)
 	}
 
 	// Namespaced, get via indexer
@@ -63,7 +63,7 @@ func (m *Manager) GetPodAssignmentsScheduling(pod *corev1.Pod) []*assignmentsv1a
 			r = append(r, obj.(*assignmentsv1alpha1.PodAssignmentRule).Spec.Scheduling.DeepCopy())
 		}
 	}); err != nil {
-		m.log.Error(err)
+		m.log.Errorf("Unable to get Namespaced pod assignment scheduling %s", err)
 	}
 
 	return r

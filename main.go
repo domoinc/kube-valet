@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/op/go-logging"
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -125,6 +127,9 @@ func main() {
 		},
 		LoggingBackend: backend1Leveled,
 	})
+
+	http.Handle("/metrics", promhttp.Handler())
+	go http.ListenAndServe(":8080", nil)
 
 	// Run the kube valet
 	kd.Run()
