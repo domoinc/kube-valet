@@ -72,7 +72,7 @@ func (m *Manager) CleanAllNodes(nag *assignmentsv1alpha1.NodeAssignmentGroup) er
 	labelKey := getLabelKey(nag.Name)
 	for _, obj := range m.nodeIndex.List() {
 		node := obj.(*corev1.Node)
-		if !m.NodeHasPackLeftAssignment(node, nag) && m.NodeHasPackLeftAttributes(node, nag) {
+		if (!m.NodeHasPackLeftAssignment(node, nag) && m.NodeHasPackLeftAttributes(node, nag)) || !NodeCanBeBalanced(node) {
 			newNode := m.unassignNode(node, labelKey)
 			if err := m.patchNodeState(node, newNode); err != nil {
 				return err
@@ -148,6 +148,9 @@ func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assig
 	//create this first so it doesn't get created twice for every node
 	podsOnNodes := m.getPodsOnNodes()
 	for _, node := range nodes {
+		if !NodeCanBeBalanced(node) {
+			continue //filter out unschedulable nodes
+		}
 		var percentFull float64
 		memFull := m.getNodePercentFullMemory(node, podsOnNodes)
 		cpuFull := m.getNodePercentFullCPU(node, podsOnNodes)
@@ -158,6 +161,11 @@ func (m *Manager) balanceNodes(nodes []*corev1.Node, labelKey string, nag *assig
 		}
 		nodesWithPercent = append(nodesWithPercent, newAssignmentContext(percentFull, node, assignment))
 	}
+	if len(nodesWithPercent) < 1 {
+		m.log.Warningf("No schedulable nodes found. Unable to balance nodes")
+		return
+	}
+
 	// sort the nodes by fullest first
 	// must be deterministic when values are equal otherwise there might be state thrashing
 	sort.Slice(nodesWithPercent, func(i, j int) bool {
@@ -486,4 +494,16 @@ func (m *Manager) RemoveFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 
 	m.log.Debug("Removed NAG finalizer")
 	return retryErr
+}
+
+func NodeCanBeBalanced(node *corev1.Node) bool {
+	isReady := false
+	for _, cond := range node.Status.Conditions {
+		if cond.Type == corev1.NodeReady {
+			isReady = cond.Status == corev1.ConditionTrue
+			break
+		}
+	}
+
+	return !node.Spec.Unschedulable && isReady
 }
