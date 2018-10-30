@@ -69,7 +69,7 @@ func (plc *Controller) OnAddNode(node *corev1.Node) {
 
 // OnUpdateNode when a node is updated rebalance all the nags that point to it
 func (plc *Controller) OnUpdateNode(oldNode *corev1.Node, newNode *corev1.Node) {
-	if utils.NodeTargetingHasChanged(oldNode, newNode) {
+	if utils.NodeTargetingHasChanged(oldNode, newNode) || (NodeCanBeBalanced(oldNode) != NodeCanBeBalanced(newNode)) {
 		plc.log.Debugf("PackLeft: Node %s has updated targetable attributes. Requeueing all Nags", oldNode.GetName())
 		plc.queueAllNags()
 	}
