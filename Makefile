@@ -1,3 +1,6 @@
+CUR_TAG ?= $(shell git describe --abbrev=0 --tags 2>/dev/null)
+PREV_TAG ?= $(shell git describe --abbrev=0 --tags $(CUR_TAG)^)
+
 VERSION ?= $(shell echo $${BRANCH_NAME:-local} | sed s/[^a-zA-Z0-9_-]/_/)_$(shell git describe --always --dirty)
 IMAGE ?= domoinc/kube-valet
 
@@ -84,4 +87,8 @@ test-customresources:
 	go build -o build/list -i _examples/clients/list.go
 
 	@echo "All custom resource client test binaries compiled!"
+
+release-notes:
+	@echo "## Changes since $(PREV_TAG)"
+	@git log --no-merges --format='%s'  $(PREV_TAG)..$(CUR_TAG) | sed 's/^/ - /'
 
