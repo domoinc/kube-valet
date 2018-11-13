@@ -129,10 +129,20 @@ func main() {
 	})
 
 	http.Handle("/metrics", promhttp.Handler())
-	go http.ListenAndServe(":8080", nil)
+	go startMetricsHttp()
 
 	// Run the kube valet
 	kd.Run()
+}
+
+func startMetricsHttp() {
+	for true {
+		err := http.ListenAndServe(":8080", nil)
+		if err != nil {
+			log.Errorf("Metrics server had an error %v", err)
+		}
+		time.Sleep(20 * time.Second)
+	}
 }
 
 func getConfig() *rest.Config {
