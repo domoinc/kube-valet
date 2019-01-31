@@ -383,7 +383,7 @@ func (m *Manager) getNodePercentFullMemory(node *corev1.Node, podsOnNodes map[st
 		}
 	}
 
-	return float64(bytesRequested) / float64(node.Status.Capacity.Memory().Value())
+	return float64(bytesRequested) / float64(node.Status.Allocatable.Memory().Value())
 }
 
 func (m *Manager) getNodePercentFullCPU(node *corev1.Node, podsOnNodes map[string][]*corev1.Pod) float64 {
@@ -397,7 +397,7 @@ func (m *Manager) getNodePercentFullCPU(node *corev1.Node, podsOnNodes map[strin
 		}
 	}
 
-	return float64(minutesRequested) / float64(node.Status.Capacity.Cpu().ScaledValue(-3))
+	return float64(minutesRequested) / float64(node.Status.Allocatable.Cpu().ScaledValue(-3))
 }
 
 // no need to optimize by only looking for one node because all pods have to be looked at anyway
