@@ -2,7 +2,7 @@ package nodeassignment
 
 import (
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/queues"
 	"github.com/domoinc/kube-valet/pkg/utils"
 	logging "github.com/op/go-logging"
@@ -20,12 +20,12 @@ type Controller struct {
 }
 
 //NewController creates a new Controller
-func NewController(nagIndex cache.Indexer, nodeIndex cache.Indexer, kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset, threadiness int, stopChannel chan struct{}) *Controller {
+func NewController(nagIndex cache.Indexer, nodeIndex cache.Indexer, kubeClient kubernetes.Interface, valetClient valet.Interface, threadiness int, stopChannel chan struct{}) *Controller {
 	return &Controller{
 		queue:    queues.NewRetryingWorkQueue("NodeAssignmentGroup", nagIndex, threadiness, stopChannel),
 		log:      logging.MustGetLogger("NodeAssignmentController"),
 		nagIndex: nagIndex,
-		nagm:     NewManager(kubeClientset, valetClientset),
+		nagm:     NewManager(kubeClient, valetClient),
 	}
 }
 

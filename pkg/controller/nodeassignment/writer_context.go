@@ -23,13 +23,13 @@ type WriterContext struct {
 	CurrentAssignments  map[string]int
 	AssignmentChanges   map[string]int
 	UnassignedNodeNames map[string]struct{}
-	kubeClientset       *kubernetes.Clientset
+	kubeClient       kubernetes.Interface
 	log                 *logging.Logger
 }
 
-func NewWriterContext(kubeClientSet *kubernetes.Clientset, nag *assignmentsv1alpha1.NodeAssignmentGroup) *WriterContext {
+func NewWriterContext(kubeClientSet kubernetes.Interface, nag *assignmentsv1alpha1.NodeAssignmentGroup) *WriterContext {
 	wc := &WriterContext{
-		kubeClientset:       kubeClientSet,
+		kubeClient:       kubeClientSet,
 		Nag:                 nag,
 		UnassignedNodeNames: make(map[string]struct{}),
 		log:                 logging.MustGetLogger("NodeAssignmentModel"),
@@ -63,7 +63,7 @@ func (wc *WriterContext) updateKnownAssignments() map[string]struct{} {
 // updateNodeSets updates a slice of pointers to copied node objects
 func (wc *WriterContext) updateNodeSets() error {
 	// Get nodes from api
-	nodes, err := wc.kubeClientset.CoreV1().Nodes().List(metav1.ListOptions{})
+	nodes, err := wc.kubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
 		wc.log.Fatal(err)
 		return err
@@ -199,7 +199,7 @@ func (wc *WriterContext) UpdateNodeAssignment(node *corev1.Node, na *assignments
 
 	// an empty patch of "{}" has a len of 2. No need to send a zero patch
 	if !utils.IsEmptyPatch(patchBytes) {
-		_, err = wc.kubeClientset.CoreV1().Nodes().Patch(node.Name, types.StrategicMergePatchType, patchBytes)
+		_, err = wc.kubeClient.CoreV1().Nodes().Patch(node.Name, types.StrategicMergePatchType, patchBytes)
 		if err != nil {
 			return err
 		}
@@ -288,7 +288,7 @@ func (wc *WriterContext) Reconcile() error {
 func (wc *WriterContext) UnassignNodeByName(name string) error {
 	wc.log.Debugf("Unassigning node %s", name)
 
-	node, err := wc.kubeClientset.CoreV1().Nodes().Get(name, metav1.GetOptions{})
+	node, err := wc.kubeClient.CoreV1().Nodes().Get(name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -303,7 +303,7 @@ func (wc *WriterContext) UnassignNodeByName(name string) error {
 func (wc *WriterContext) UnassignAllNodes() error {
 	wc.log.Debugf("Unassigning all Assignments from %s", wc.Nag.ObjectMeta.Name)
 
-	nodes, err := wc.kubeClientset.CoreV1().Nodes().List(metav1.ListOptions{})
+	nodes, err := wc.kubeClient.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}

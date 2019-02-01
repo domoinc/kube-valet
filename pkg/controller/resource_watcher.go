@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/config"
 	"github.com/domoinc/kube-valet/pkg/controller/podassignment"
 	"github.com/op/go-logging"
@@ -24,8 +24,8 @@ import (
 // ResourceWatcher abstracts and shares indexers and informers.
 // Passes events onto the controllers that handle the business logic for each event.
 type ResourceWatcher struct {
-	kubeClientset  *kubernetes.Clientset
-	valetClientset *valetclient.Clientset
+	kubeClient  kubernetes.Interface
+	valetClient valet.Interface
 	log            *logging.Logger
 	config         *config.ValetConfig
 
@@ -51,10 +51,10 @@ type ResourceWatcher struct {
 }
 
 // NewResourceWatcher creates a new ResourceWatcher
-func NewResourceWatcher(kubeClientet *kubernetes.Clientset, valetClientset *valetclient.Clientset, config *config.ValetConfig) *ResourceWatcher {
+func NewResourceWatcher(kubeClientet kubernetes.Interface, valetClient valet.Interface, config *config.ValetConfig) *ResourceWatcher {
 	return &ResourceWatcher{
-		kubeClientset:  kubeClientet,
-		valetClientset: valetClientset,
+		kubeClient:  kubeClientet,
+		valetClient: valetClient,
 		log:            logging.MustGetLogger("ResourceWatcher"),
 		config:         config,
 	}
@@ -77,8 +77,8 @@ func (rw *ResourceWatcher) Run(stopChan chan struct{}) {
 
 	rw.log.Infof("starting controllers")
 
-	coreRestClient := rw.kubeClientset.CoreV1().RESTClient()
-	assignmentRestClient := rw.valetClientset.AssignmentsV1alpha1().RESTClient()
+	coreRestClient := rw.kubeClient.CoreV1().RESTClient()
+	assignmentRestClient := rw.valetClient.AssignmentsV1alpha1().RESTClient()
 
 	//pod controller
 	podListWatch := cache.NewListWatchFromClient(coreRestClient, "pods", corev1.NamespaceAll, fields.Everything())
@@ -182,20 +182,20 @@ func (rw *ResourceWatcher) Run(stopChan chan struct{}) {
 
 	var parCtlr *podassignment.Controller
 	if rw.config.ParController.ShouldRun {
-		parCtlr = podassignment.NewController(rw.podIndexer, rw.cparIndexer, rw.parIndexer, rw.kubeClientset, rw.valetClientset, rw.config.ParController.Threads, stopChan)
+		parCtlr = podassignment.NewController(rw.podIndexer, rw.cparIndexer, rw.parIndexer, rw.kubeClient, rw.valetClient, rw.config.ParController.Threads, stopChan)
 		rw.addPodController(parCtlr)
 	}
 
 	var nagCtlr *nodeassignment.Controller
 	if rw.config.NagController.ShouldRun {
-		nagCtlr = nodeassignment.NewController(rw.nagIndexer, rw.nodeIndexer, rw.kubeClientset, rw.valetClientset, rw.config.NagController.Threads, stopChan)
+		nagCtlr = nodeassignment.NewController(rw.nagIndexer, rw.nodeIndexer, rw.kubeClient, rw.valetClient, rw.config.NagController.Threads, stopChan)
 		rw.addNodeController(nagCtlr)
 		rw.addNagController(nagCtlr)
 	}
 
 	var plCtlr *packleft.Controller
 	if rw.config.PLController.ShouldRun {
-		plCtlr = packleft.NewController(rw.nagIndexer, rw.nodeIndexer, rw.podIndexer, rw.kubeClientset, rw.valetClientset, rw.config.PLController.Threads, stopChan)
+		plCtlr = packleft.NewController(rw.nagIndexer, rw.nodeIndexer, rw.podIndexer, rw.kubeClient, rw.valetClient, rw.config.PLController.Threads, stopChan)
 		rw.addNodeController(plCtlr)
 		rw.addNagController(plCtlr)
 		rw.addPodController(plCtlr)

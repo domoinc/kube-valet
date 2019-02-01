@@ -2,7 +2,7 @@ package nodeassignment
 
 import (
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/utils"
 	logging "github.com/op/go-logging"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,15 +15,15 @@ const (
 )
 
 type Manager struct {
-	kubeClientset  *kubernetes.Clientset
-	valetClientset *valetclient.Clientset
+	kubeClient  kubernetes.Interface
+	valetClient valet.Interface
 	log            *logging.Logger
 }
 
-func NewManager(kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset) *Manager {
+func NewManager(kubeClient kubernetes.Interface, valetClient valet.Interface) *Manager {
 	return &Manager{
-		kubeClientset:  kubeClientset,
-		valetClientset: valetClientset,
+		kubeClient:  kubeClient,
+		valetClient: valetClient,
 		log:            logging.MustGetLogger("NodeAssignmentManager"),
 	}
 }
@@ -35,7 +35,7 @@ func (m *Manager) ReconcileNag(nag *assignmentsv1alpha1.NodeAssignmentGroup) err
 	m.log.Debugf("Sync/Add/Update for NodeAssignmentGroup %s\n", nag.GetName())
 
 	// Create a new NagController
-	nagWc := NewWriterContext(m.kubeClientset, nag)
+	nagWc := NewWriterContext(m.kubeClient, nag)
 
 	if nag.GetDeletionTimestamp() == nil {
 		m.log.Debug("Handling NAG Add/Update")
@@ -72,7 +72,7 @@ func (m *Manager) AddFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) (bo
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		// Retrieve the latest version before attempting update
 		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
-		result, getErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
+		result, getErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
 		if getErr != nil {
 			m.log.Errorf("Failed to get latest version of nag: %v", getErr)
 		}
@@ -80,7 +80,7 @@ func (m *Manager) AddFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) (bo
 		// Add Finalizer
 		result.SetFinalizers(append(result.GetFinalizers(), nagFinalizer))
 
-		_, updateErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
+		_, updateErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
 		return updateErr
 	})
 
@@ -97,7 +97,7 @@ func (m *Manager) RemoveFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		// Retrieve the latest version before attempting update
 		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
-		result, getErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
+		result, getErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
 		if getErr != nil {
 			m.log.Errorf("Failed to get latest version of nag: %v", getErr)
 		}
@@ -113,7 +113,7 @@ func (m *Manager) RemoveFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 		// Set new list of finalizers on obj and update
 		result.SetFinalizers(newFinalizers)
 
-		_, updateErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
+		_, updateErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
 		return updateErr
 	})
 
