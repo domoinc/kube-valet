@@ -10,30 +10,30 @@ import (
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 	"k8s.io/client-go/tools/record"
 
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 
 	"github.com/domoinc/kube-valet/pkg/config"
 	"github.com/domoinc/kube-valet/pkg/controller"
 )
 
 type KubeValet struct {
-	kubeClientset  *kubernetes.Clientset
-	valetClientset *valetclient.Clientset
+	kubeClient  kubernetes.Interface
+	valetClient valet.Interface
 	stopChan       chan struct{}
 	config         *config.ValetConfig
 }
 
-func NewKubeValet(kc *kubernetes.Clientset, dc *valetclient.Clientset, config *config.ValetConfig) *KubeValet {
+func NewKubeValet(kc kubernetes.Interface, dc valet.Interface, config *config.ValetConfig) *KubeValet {
 	logging.SetBackend(config.LoggingBackend)
 	return &KubeValet{
-		kubeClientset:  kc,
-		valetClientset: dc,
+		kubeClient:  kc,
+		valetClient: dc,
 		config:         config,
 	}
 }
 
 func (kd *KubeValet) StartControllers(stop <-chan struct{}) {
-	resourceWatcher := controller.NewResourceWatcher(kd.kubeClientset, kd.valetClientset, kd.config)
+	resourceWatcher := controller.NewResourceWatcher(kd.kubeClient, kd.valetClient, kd.config)
 	resourceWatcher.Run(kd.stopChan)
 }
 
@@ -57,7 +57,7 @@ func (kd *KubeValet) Run() {
 			*electResource,
 			*electNamespace,
 			*electName,
-			kd.kubeClientset.CoreV1(),
+			kd.kubeClient.CoreV1(),
 			resourcelock.ResourceLockConfig{
 				Identity: *electID,
 				EventRecorder: record.NewBroadcaster().NewRecorder(

@@ -14,7 +14,7 @@ import (
 	"k8s.io/client-go/util/retry"
 
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// create the clientset
-	clientset, err := valetclient.NewForConfig(config)
+	clientset, err := valet.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
 
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// create the clientset
-	clientset, err := valetclient.NewForConfig(config)
+	clientset, err := valet.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}

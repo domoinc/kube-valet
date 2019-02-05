@@ -1,7 +1,7 @@
 package podassignment
 
 import (
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/queues"
 	logging "github.com/op/go-logging"
 	corev1 "k8s.io/api/core/v1"
@@ -27,12 +27,12 @@ type Controller struct {
 }
 
 // NewController creates a new Controller
-func NewController(podIndex cache.Indexer, cparIndex cache.Indexer, parIndex cache.Indexer, kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset, threadiness int, stopChannel chan struct{}) *Controller {
+func NewController(podIndex cache.Indexer, cparIndex cache.Indexer, parIndex cache.Indexer, kubeClient kubernetes.Interface, valetClient valet.Interface, threadiness int, stopChannel chan struct{}) *Controller {
 	return &Controller{
 		queue:    queues.NewRetryingWorkQueue("Pod", podIndex, threadiness, stopChannel),
 		log:      logging.MustGetLogger("PodAssignmentController"),
 		podIndex: podIndex,
-		parMan:   NewManager(podIndex, cparIndex, parIndex, kubeClientset),
+		parMan:   NewManager(podIndex, cparIndex, parIndex, kubeClient),
 	}
 }
 

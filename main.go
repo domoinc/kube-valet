@@ -8,7 +8,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/op/go-logging"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"k8s.io/client-go/kubernetes"
@@ -105,7 +105,7 @@ func main() {
 	}
 
 	// create the valet client
-	valetClient, err := valetclient.NewForConfig(config)
+	valetClient, err := valet.NewForConfig(config)
 	if err != nil {
 		log.Errorf("Error creating kube-valet client: %s", err)
 		os.Exit(2)

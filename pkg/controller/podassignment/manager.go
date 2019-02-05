@@ -20,16 +20,16 @@ type Manager struct {
 	podIndex      cache.Indexer
 	cparIndex     cache.Indexer
 	parIndex      cache.Indexer
-	kubeClientset *kubernetes.Clientset
+	kubeClient kubernetes.Interface
 }
 
-func NewManager(podIndex cache.Indexer, cparIndex cache.Indexer, parIndex cache.Indexer, kubeClientset *kubernetes.Clientset) *Manager {
+func NewManager(podIndex cache.Indexer, cparIndex cache.Indexer, parIndex cache.Indexer, kubeClient kubernetes.Interface) *Manager {
 	return &Manager{
 		log:           logging.MustGetLogger("PodAssignmentManager"),
 		podIndex:      podIndex,
 		cparIndex:     cparIndex,
 		parIndex:      parIndex,
-		kubeClientset: kubeClientset,
+		kubeClient: kubeClient,
 	}
 }
 
@@ -114,7 +114,7 @@ func (m *Manager) InitializePod(pod *corev1.Pod) error {
 	}
 
 	if !utils.IsEmptyPatch(patchBytes) {
-		_, err = m.kubeClientset.CoreV1().Pods(pod.Namespace).Patch(pod.Name, types.StrategicMergePatchType, patchBytes)
+		_, err = m.kubeClient.CoreV1().Pods(pod.Namespace).Patch(pod.Name, types.StrategicMergePatchType, patchBytes)
 		if err != nil {
 			return err
 		}

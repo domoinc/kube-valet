@@ -119,8 +119,8 @@ var (
 	assignmentReportCmd = assignmentCmd.Command("report", "Report on ClusterPodAssignmentRules and PodAssignmentRules")
 
 	restConfig  *rest.Config
-	kubeClient  *kubernetes.Clientset
-	valetClient *valet.Clientset
+	kubeClient  kubernetes.Interface
+	valetClient valet.Interface
 )
 
 func main() {
@@ -155,7 +155,7 @@ func main() {
 
 }
 
-func configureClients() (*kubernetes.Clientset, *valet.Clientset) {
+func configureClients() (kubernetes.Interface, valet.Interface) {
 	// Get kubeconfig
 	restConfig = getConfig()
 

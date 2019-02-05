@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/domoinc/kube-valet/pkg/utils"
 	logging "github.com/op/go-logging"
 	"github.com/prometheus/client_golang/prometheus"
@@ -25,23 +25,23 @@ const (
 
 // Manager mangaes interactions with nags and the nodes they point to
 type Manager struct {
-	nagIndex       cache.Indexer
-	nodeIndex      cache.Indexer
-	podIndex       cache.Indexer
-	valetClientset *valetclient.Clientset
-	kubeClientset  *kubernetes.Clientset
-	log            *logging.Logger
+	nagIndex    cache.Indexer
+	nodeIndex   cache.Indexer
+	podIndex    cache.Indexer
+	valetClient valet.Interface
+	kubeClient  kubernetes.Interface
+	log         *logging.Logger
 }
 
 // NewManager creates a new manager
-func NewManager(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.Indexer, kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset) *Manager {
+func NewManager(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.Indexer, kubeClient kubernetes.Interface, valetClient valet.Interface) *Manager {
 	return &Manager{
-		nagIndex:       nagIndex,
-		nodeIndex:      nodeIndex,
-		podIndex:       podIndex,
-		kubeClientset:  kubeClientset,
-		valetClientset: valetClientset,
-		log:            logging.MustGetLogger("PackLeftSchedulingManager"),
+		nagIndex:    nagIndex,
+		nodeIndex:   nodeIndex,
+		podIndex:    podIndex,
+		kubeClient:  kubeClient,
+		valetClient: valetClient,
+		log:         logging.MustGetLogger("PackLeftSchedulingManager"),
 	}
 }
 
@@ -264,7 +264,7 @@ func (m *Manager) patchNodeState(oldNode *corev1.Node, newNode *corev1.Node) err
 
 	// an empty patch of "{}" has a len of 2. No need to send a zero patch
 	if !utils.IsEmptyPatch(patchBytes) {
-		_, err = m.kubeClientset.CoreV1().Nodes().Patch(oldNode.Name, types.StrategicMergePatchType, patchBytes)
+		_, err = m.kubeClient.CoreV1().Nodes().Patch(oldNode.Name, types.StrategicMergePatchType, patchBytes)
 		if err != nil {
 			return err
 		}
@@ -383,7 +383,7 @@ func (m *Manager) getNodePercentFullMemory(node *corev1.Node, podsOnNodes map[st
 		}
 	}
 
-	return float64(bytesRequested) / float64(node.Status.Capacity.Memory().Value())
+	return float64(bytesRequested) / float64(node.Status.Allocatable.Memory().Value())
 }
 
 func (m *Manager) getNodePercentFullCPU(node *corev1.Node, podsOnNodes map[string][]*corev1.Pod) float64 {
@@ -397,7 +397,7 @@ func (m *Manager) getNodePercentFullCPU(node *corev1.Node, podsOnNodes map[strin
 		}
 	}
 
-	return float64(minutesRequested) / float64(node.Status.Capacity.Cpu().ScaledValue(-3))
+	return float64(minutesRequested) / float64(node.Status.Allocatable.Cpu().ScaledValue(-3))
 }
 
 // no need to optimize by only looking for one node because all pods have to be looked at anyway
@@ -443,7 +443,7 @@ func (m *Manager) ensureFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		// Retrieve the latest version before attempting update
 		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
-		result, getErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
+		result, getErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
 		if getErr != nil {
 			m.log.Errorf("Failed to get latest version of nag: %v", getErr)
 		}
@@ -451,7 +451,7 @@ func (m *Manager) ensureFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 		// Add Finalizer
 		result.SetFinalizers(append(result.GetFinalizers(), PackLeftFinalizer))
 
-		_, updateErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
+		_, updateErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
 		return updateErr
 	})
 
@@ -468,7 +468,7 @@ func (m *Manager) RemoveFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
 		// Retrieve the latest version before attempting update
 		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
-		result, getErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
+		result, getErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Get(nag.GetName(), metav1.GetOptions{})
 		if getErr != nil {
 			m.log.Errorf("Failed to get latest version of nag: %v", getErr)
 		}
@@ -484,7 +484,7 @@ func (m *Manager) RemoveFinalizer(nag *assignmentsv1alpha1.NodeAssignmentGroup) 
 		// Set new list of finalizers on obj and update
 		result.SetFinalizers(newFinalizers)
 
-		_, updateErr := m.valetClientset.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
+		_, updateErr := m.valetClient.AssignmentsV1alpha1().NodeAssignmentGroups().Update(result)
 		return updateErr
 	})
 

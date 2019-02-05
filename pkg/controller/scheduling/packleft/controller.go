@@ -2,7 +2,7 @@ package packleft
 
 import (
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
-	valetclient "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
+	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 	"github.com/op/go-logging"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -16,8 +16,8 @@ import (
 // Controller manages events for pods, nodes, and nags and rebalances pack left strategies on the nag
 type Controller struct {
 	queue          *queues.RetryingWorkQueue
-	kubeClientset  *kubernetes.Clientset
-	valetClientset *valetclient.Clientset
+	kubeClient  kubernetes.Interface
+	valetClient valet.Interface
 	plm            *Manager
 	nagIndex       cache.Indexer
 	nodeIndex      cache.Indexer
@@ -26,10 +26,10 @@ type Controller struct {
 }
 
 // NewController creates a new packleft.Controller
-func NewController(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.Indexer, kubeClientset *kubernetes.Clientset, valetClientset *valetclient.Clientset, threadiness int, stopChannel chan struct{}) *Controller {
+func NewController(nagIndex cache.Indexer, nodeIndex cache.Indexer, podIndex cache.Indexer, kubeClient kubernetes.Interface, valetClient valet.Interface, threadiness int, stopChannel chan struct{}) *Controller {
 	return &Controller{
 		queue:     queues.NewRetryingWorkQueue("NodeAssignmentGroup", nagIndex, threadiness, stopChannel),
-		plm:       NewManager(nagIndex, nodeIndex, podIndex, kubeClientset, valetClientset),
+		plm:       NewManager(nagIndex, nodeIndex, podIndex, kubeClient, valetClient),
 		nagIndex:  nagIndex,
 		nodeIndex: nodeIndex,
 		log:       logging.MustGetLogger("PackLeftSchedulingController"),
