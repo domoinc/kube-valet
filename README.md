@@ -193,8 +193,7 @@ If kube-valet is not running or not working and pods are getting stuck in an un-
 ### Requirements
 
   * `make`
-  * Golang 1.9+
-  * [glide](https://github.com/Masterminds/glide)
+  * Golang 1.12+
 
 ### Process
 
