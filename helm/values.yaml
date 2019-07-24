@@ -1,0 +1,21 @@
+# Default values for kube-valet.
+
+replicaCount: 2
+
+image:
+  name: domoinc/kube-valet:latest
+  pullPolicy: IfNotPresent
+
+# Set to true to enable kube-valet across all namespaces
+# Otherwise namespaces must explicitly enable it with
+# a label of: kube-valet.io/enabled=""
+global: false
+
+# TLS Options for the webhook
+tls:
+  # The default behavior is to expect the user to provide certs
+  # Set auto=true to use a kubernetes job to automatically create certs instead.
+  auto: false
+  caPath:   tls/ca.pem
+  keyPath:  tls/server-key.pem
+  certPath: tls/server.pem

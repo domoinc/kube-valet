@@ -88,6 +88,7 @@ func (s *Server) Run() {
 
 	// define http server and server handler
 	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", s.healthzHandler)
 	mux.HandleFunc("/mutate", s.mutateHandler)
 	s.server.Handler = mux
 
@@ -100,6 +101,11 @@ func (s *Server) Run() {
 		}
 		time.Sleep(3 * time.Second)
 	}
+}
+
+func (s *Server) healthzHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	w.Write([]byte("Healthy"))
 }
 
 func (s *Server) mutateHandler(w http.ResponseWriter, r *http.Request) {

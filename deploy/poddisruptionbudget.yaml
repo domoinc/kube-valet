@@ -1,0 +1,10 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: kube-valet
+  namespace: kube-valet
+spec:
+  minAvailable: 1 # There must always be at least 1 valet running or pods cannot get created.
+  selector:
+    matchLabels:
+      k8s-app: kube-valet

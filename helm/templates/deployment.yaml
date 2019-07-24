@@ -9,7 +9,7 @@ spec:
   progressDeadlineSeconds: 600
   # Two replicas should be enough to provide for high-availabilty
   # More replicas may be needed under increased pod creation load
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -40,7 +40,7 @@ spec:
       containers:
       - name: kube-valet
         # Production systems should use a stable version tag
-        image: domoinc/kube-valet:latest
+        image: {{ .Values.image.name | quote }}
         command:
           - /kube-valet
           - --in-cluster # Use in-cluster config to reach Kuberntes api
@@ -65,7 +65,7 @@ spec:
         volumeMounts:
           - name: tls
             mountPath: /tls
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
       volumes:
         - name: tls
           secret:
