@@ -2,3 +2,4 @@ build
 vendor/
 .glide
 .idea/*
+.vscode/
