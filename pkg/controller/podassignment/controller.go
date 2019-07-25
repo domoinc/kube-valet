@@ -10,8 +10,6 @@ import (
 )
 
 const (
-	// InitializerName the name of the initializer we resolve
-	InitializerName = "pod.initializer.kube-valet.io"
 	// ProtectedLabelKey the protected label key
 	ProtectedLabelKey = "pod.initializer.kube-valet.io/protected"
 	// ProtectedLabelValue true
@@ -36,21 +34,12 @@ func NewController(podIndex cache.Indexer, cparIndex cache.Indexer, parIndex cac
 	}
 }
 
-// Run start the podassignment.Controller
-func (c *Controller) Run() {
-	c.queue.Run(func(obj interface{}) error {
-		pod := obj.(*corev1.Pod)
-		c.log.Debugf("processing business logic for pod %s", pod.Name)
-		return c.parMan.initializePod(pod)
-	})
-}
-
-// OnAddPod process the pod initializer
+// OnAddPod processes the pod
 func (c *Controller) OnAddPod(pod *corev1.Pod) {
 	c.queue.AddItem(pod)
 }
 
-// OnUpdatePod if the pod has been updated process the initializer
+// OnUpdatePod if the pod has been updated
 func (c *Controller) OnUpdatePod(oldPod *corev1.Pod, newPod *corev1.Pod) {
 	if (oldPod.GetResourceVersion() != newPod.GetResourceVersion()) ||
 		(oldPod.GetUID() != newPod.GetUID()) {
@@ -58,7 +47,11 @@ func (c *Controller) OnUpdatePod(oldPod *corev1.Pod, newPod *corev1.Pod) {
 	}
 }
 
-// OnDeletePod if the pod was deleted process the initializer
+// OnDeletePod if the pod was deleted
 func (c *Controller) OnDeletePod(pod *corev1.Pod) {
 	c.queue.AddItem(pod)
+}
+
+func (c *Controller) PodManager() *Manager {
+	return c.parMan
 }

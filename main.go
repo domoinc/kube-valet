@@ -60,6 +60,11 @@ var (
 	electID        = app.Flag("leader-elect-id", "Unique name for election candidate. Defaults to hostname").String()
 	electNamespace = app.Flag("leader-elect-namespace", "The namespace that the election resource will be created in").Default("kube-system").String()
 
+	// Options for webhook server
+	listen      = app.Flag("listen", "The listen address for the webhook server").Default(":443").String()
+	tlsCertPath = app.Flag("cert", "The path to a valid tls serving certificate").Required().ExistingFile()
+	tlsKeyPath  = app.Flag("key", "The path to a valid tls serving key").Required().ExistingFile()
+
 	log    = logging.MustGetLogger("kube-valet")
 	format = logging.MustStringFormatter(`%{color}%{time:2006-01-02T15:04:05.999Z-07:00} %{shortfunc} : %{level:.4s}%{color:reset} %{message}`)
 )

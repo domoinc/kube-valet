@@ -15,14 +15,14 @@ import (
 
 // Controller manages events for pods, nodes, and nags and rebalances pack left strategies on the nag
 type Controller struct {
-	queue          *queues.RetryingWorkQueue
+	queue       *queues.RetryingWorkQueue
 	kubeClient  kubernetes.Interface
 	valetClient valet.Interface
-	plm            *Manager
-	nagIndex       cache.Indexer
-	nodeIndex      cache.Indexer
-	log            *logging.Logger
-	registry       *metrics.Registry
+	plm         *Manager
+	nagIndex    cache.Indexer
+	nodeIndex   cache.Indexer
+	log         *logging.Logger
+	registry    *metrics.Registry
 }
 
 // NewController creates a new packleft.Controller
@@ -63,7 +63,7 @@ func (plc *Controller) Run() {
 
 // OnAddNode when a node is added, queue a process of all nags
 func (plc *Controller) OnAddNode(node *corev1.Node) {
-	plc.log.Debugf("Packleft: Node %s added. Requeueing all Nags", node.GetName())
+	plc.log.Debugf("Packleft: Node %s added or workload changed. Requeueing all Nags", node.GetName())
 	plc.queueAllNags()
 }
 

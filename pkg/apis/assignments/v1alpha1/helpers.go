@@ -3,6 +3,7 @@ package v1alpha1
 import (
 	"fmt"
 
+	"github.com/domoinc/kube-valet/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -217,4 +218,36 @@ func (s *PodAssignmentRuleScheduling) ApplyToPod(pod *corev1.Pod) {
 			pod.Spec.Tolerations = s.Tolerations
 		}
 	}
+}
+
+func (s *PodAssignmentRuleScheduling) GetPatchOps(pod *corev1.Pod) []utils.JsonPatchOperation {
+	ops := []utils.JsonPatchOperation{}
+
+	// Support all known merge strategies
+	switch ms := s.GetMergeStrategy(); ms {
+	case PodAssignmentRuleSchedulingMergeStrategyOverwriteAll:
+		if len(s.NodeSelector) != 0 {
+			ops = append(ops, utils.JsonPatchOperation{
+				Op:    "replace",
+				Path:  "/spec/nodeSelector",
+				Value: s.NodeSelector,
+			})
+		}
+		if s.Affinity != nil {
+			ops = append(ops, utils.JsonPatchOperation{
+				Op:    "replace",
+				Path:  "/spec/affinity",
+				Value: s.Affinity,
+			})
+		}
+		if len(s.Tolerations) != 0 {
+			ops = append(ops, utils.JsonPatchOperation{
+				Op:    "replace",
+				Path:  "/spec/tolerations",
+				Value: s.Tolerations,
+			})
+		}
+	}
+
+	return ops
 }

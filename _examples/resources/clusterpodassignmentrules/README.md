@@ -53,4 +53,4 @@ spec:
 
 ## Protecting Pods from Modification
 
-To make sure that a pod is never modified by kube-valet, regardless of any matching rules. The pod can be given the `pod.initializer.kube-valet.io/protected=true` label. Which instructs kube-valet to simply initialize the pod without modification. This is useful for system pods that should be safe from modification.
+To make sure that a pod is never modified by kube-valet, regardless of any matching rules. The pod can be given the `pod.initializer.kube-valet.io/protected=true` label. Which instructs kube-valet to simply process the pod without modification. This is useful for system pods that should be safe from modification.

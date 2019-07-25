@@ -7,8 +7,6 @@ metadata:
     k8s-app: kube-valet
 spec:
   progressDeadlineSeconds: 600
-  # Increase the number of replicas to reduce the likelyhood of pods getting stuck
-  # in an un-initialized state. For a zero-risk deployment. Use static pods
   replicas: 2
   revisionHistoryLimit: 10
   selector:

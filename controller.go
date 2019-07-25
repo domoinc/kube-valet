@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/op/go-logging"
 
 	corev1 "k8s.io/api/core/v1"
@@ -11,16 +13,16 @@ import (
 	"k8s.io/client-go/tools/record"
 
 	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
-
 	"github.com/domoinc/kube-valet/pkg/config"
 	"github.com/domoinc/kube-valet/pkg/controller"
+	"github.com/domoinc/kube-valet/pkg/webhook"
 )
 
 type KubeValet struct {
 	kubeClient  kubernetes.Interface
 	valetClient valet.Interface
-	stopChan       chan struct{}
-	config         *config.ValetConfig
+	stopChan    chan struct{}
+	config      *config.ValetConfig
 }
 
 func NewKubeValet(kc kubernetes.Interface, dc valet.Interface, config *config.ValetConfig) *KubeValet {
@@ -28,27 +30,33 @@ func NewKubeValet(kc kubernetes.Interface, dc valet.Interface, config *config.Va
 	return &KubeValet{
 		kubeClient:  kc,
 		valetClient: dc,
-		config:         config,
+		config:      config,
 	}
 }
 
-func (kd *KubeValet) StartControllers(stop <-chan struct{}) {
-	resourceWatcher := controller.NewResourceWatcher(kd.kubeClient, kd.valetClient, kd.config)
-	resourceWatcher.Run(kd.stopChan)
-}
-
-func (kd *KubeValet) StopControllers() {
-	close(kd.stopChan)
-}
-
 func (kd *KubeValet) Run() {
-	// Create a channel for leader elect events
-	// and exit signaling
-	kd.stopChan = make(chan struct{})
-	defer close(kd.stopChan)
+	log.Notice("Running kube-valet controller")
+	ctx := context.Background()
 
-	log.Notice("Running controllers")
-	// Do Election
+	// Setup and start resource watcher
+	resourceWatcher := controller.NewResourceWatcher(kd.kubeClient, kd.valetClient, kd.config)
+	kd.stopChan = make(chan struct{})
+	resourceWatcher.Run(kd.stopChan)
+
+	// Start the webhook server
+	whConfig := &webhook.Config{
+		Listen:      *listen,
+		TLSCertPath: *tlsCertPath,
+		TLSKeyPath:  *tlsKeyPath,
+	}
+	mwhs := webhook.New(
+		whConfig,
+		resourceWatcher.ParController().PodManager(),
+		log,
+	)
+	go mwhs.Run()
+
+	// Handle elected processes
 	if *leaderElection {
 		log.Debug("Leader election enabled")
 
@@ -58,6 +66,7 @@ func (kd *KubeValet) Run() {
 			*electNamespace,
 			*electName,
 			kd.kubeClient.CoreV1(),
+			kd.kubeClient.CoordinationV1(),
 			resourcelock.ResourceLockConfig{
 				Identity: *electID,
 				EventRecorder: record.NewBroadcaster().NewRecorder(
@@ -72,22 +81,22 @@ func (kd *KubeValet) Run() {
 
 		log.Debug("Building LeaderElector")
 
-		leaderelection.RunOrDie(leaderelection.LeaderElectionConfig{
+		leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
 			Lock:          rl,
 			LeaseDuration: *electDuration,
 			RenewDeadline: *electDeadline,
 			RetryPeriod:   *electRetry,
 			Callbacks: leaderelection.LeaderCallbacks{
-				OnStartedLeading: kd.StartControllers,
-				OnStoppedLeading: kd.StopControllers,
+				OnStartedLeading: resourceWatcher.StartElectedComponents,
+				OnStoppedLeading: resourceWatcher.StopElectedComponents,
 				OnNewLeader: func(identity string) {
 					log.Debugf("Observed %s as the leader", identity)
 				},
 			},
 		})
 	} else {
-		log.Debug("Leader election disabled. Running controllers.")
-		kd.StartControllers(kd.stopChan)
-		<-kd.stopChan
+		log.Notice("Leader election disabled")
+		resourceWatcher.StartElectedComponents(ctx)
+		<-ctx.Done()
 	}
 }
