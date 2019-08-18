@@ -3,7 +3,7 @@
 ## AUTOMATIC TLS ##
 The automatic TLS generates a secret called "tls-ca" in the "kube-valet" namespace.
 For added security, this secret should be downloaded, saved in a secure location,
-and then delted.
+and then deleted.
 {{- end }}
 
 ## MASTER NODE PROTECTION ##
