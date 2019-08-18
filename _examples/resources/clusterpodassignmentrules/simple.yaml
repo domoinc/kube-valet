@@ -7,5 +7,5 @@ spec:
   targetLabels:
     worktype: "simple"
   scheduling:
-    NodeSelector:
+    nodeSelector:
       for-worktype: "simple"

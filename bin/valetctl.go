@@ -22,6 +22,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 
+	// Import auth plugins
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
+
 	assignmentsv1alpha1 "github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1"
 	valet "github.com/domoinc/kube-valet/pkg/client/clientset/versioned"
 )

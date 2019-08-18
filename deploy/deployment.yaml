@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-valet
-  namespace: kube-system
+  namespace: kube-valet
   labels:
     k8s-app: kube-valet
 spec:
   progressDeadlineSeconds: 600
-  # Increase the number of replicas to reduce the likelyhood of pods getting stuck
-  # in an un-initialized state. For a zero-risk deployment. Use static pods
+  # Two replicas should be enough to provide for high-availabilty
+  # More replicas may be needed under increased pod creation load
   replicas: 2
   revisionHistoryLimit: 10
   selector:
@@ -43,9 +43,33 @@ spec:
         image: domoinc/kube-valet:latest
         command:
           - /kube-valet
-          # Run with leader election on so only one pod is active at a time.
-          - --leader-elect
-        imagePullPolicy: IfNotPresent
+          - --in-cluster # Use in-cluster config to reach Kuberntes api
+          - --leader-elect # Run with leader election on so only one pod is active at a time.
+          - --leader-elect-namespace=kube-valet # Leader-elect in own namespace
+          - --cert=/tls/server.pem
+          - --key=/tls/server-key.pem
+        readinessProbe:
+          httpGet:
+            port: 443
+            path: /healthz
+            scheme: HTTPS
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            port: 443
+            path: /healthz
+            scheme: HTTPS
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        volumeMounts:
+          - name: tls
+            mountPath: /tls
+        imagePullPolicy: Always
+      volumes:
+        - name: tls
+          secret:
+            secretName: kube-valet
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

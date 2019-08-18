@@ -1,0 +1,26 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: scheduling.kube-valet.io
+webhooks:
+- name: scheduling.kube-valet.io
+  # Allow namespace exclusion via a label
+  namespaceSelector:
+    matchExpressions:
+    - key: kube-valet.io/ignore
+      operator: DoesNotExist
+  # Comment the lines below to enable kube-valet on all namespaces by default
+    - key: kube-valet.io/enabled
+      operator: Exists
+  failurePolicy: Fail
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJkRENDQVJxZ0F3SUJBZ0lVTFZDc2swaUZKS3U3VUZLcW5SWkVKUG0rcStFd0NnWUlLb1pJemowRUF3SXcKR0RFV01CUUdBMVVFQXhNTmEzVmlaUzEyWVd4bGRDMWpZVEFlRncweE9UQTNNalV5TVRBeE1EQmFGdzB5TkRBMwpNak15TVRBeE1EQmFNQmd4RmpBVUJnTlZCQU1URFd0MVltVXRkbUZzWlhRdFkyRXdXVEFUQmdjcWhrak9QUUlCCkJnZ3Foa2pPUFFNQkJ3TkNBQVNiUTFSN1RVbHlGZ0ZPczFOamFXei85WmFjY0drck1EM2ZJWHhZRkppWG13V2IKeEdDcXVSL1V0Z0d2cXhLT2tweXJxL0ZrT2VBU2MxTXpUTjkyVDZaYW8wSXdRREFPQmdOVkhROEJBZjhFQkFNQwpBUVl3RHdZRFZSMFRBUUgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVL2QvMlNHM1pGd283dFNLaCt1WWxOQkY4CjBxUXdDZ1lJS29aSXpqMEVBd0lEU0FBd1JRSWhBTmZTeGRHVDRPWWpGb2l1Z3dRaUVLR05Fbi9Rd1d6Y1JVcTQKNERXRjhvYjNBaUJVZ0NDdy9MTVh1NzV1TVp5SjJ4SjNxaWx1N0xzUlhhempYS21zWHZaYzZ3PT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    service:
+      namespace: kube-valet
+      name: kube-valet
+      path: /mutate
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["*"]
+    resources: ["pods"]

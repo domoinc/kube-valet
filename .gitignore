@@ -2,3 +2,6 @@ build
 vendor/
 .glide
 .idea/*
+.vscode/
+helm/tls/
+tls/

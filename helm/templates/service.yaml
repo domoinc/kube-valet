@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-valet
+  namespace: kube-valet
+spec:
+  selector:
+    k8s-app: kube-valet
+  ports:
+  - port: 443
+    targetPort: 443

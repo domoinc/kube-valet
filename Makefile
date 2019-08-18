@@ -6,12 +6,9 @@ IMAGE ?= domoinc/kube-valet
 
 .PHONY: all kube-valet valetctl test release
 
-all: install-deps customresources build
+all: customresources build
 
 build: kube-valet valetctl
-
-install-deps:
-	glide i
 
 kube-valet:
 	mkdir build || true
@@ -54,7 +51,11 @@ push-release: release
 customresources: clean-customresources gen-customresources test-customresources
 
 gen-customresources: clean-customresources
-	grep "openapi-gen" ./vendor/k8s.io/code-generator/generate-groups.sh || cat ./_openapi/openapi-gen.sh >> ./vendor/k8s.io/code-generator/generate-groups.sh \
+    # Install vendor files from modules
+	go mod vendor
+
+	cat ./vendor/k8s.io/code-generator/generate-groups.sh ./_openapi/openapi-gen.sh > ./vendor/k8s.io/code-generator/generate-groups-custom.sh
+	chmod +x ./vendor/k8s.io/code-generator/generate-groups-custom.sh
 
 	mkdir -p ./pkg/client/openapi
 
@@ -62,19 +63,33 @@ gen-customresources: clean-customresources
 	cp ./_openapi/path_template.tmpl ./pkg/client/openapi
 	cp ./_openapi/print_test.go ./pkg/client/openapi
 
-	./vendor/k8s.io/code-generator/generate-groups.sh all \
+	# Generate client and deepcopy
+	./vendor/k8s.io/code-generator/generate-groups-custom.sh deepcopy,client,informer,lister,openapi \
 	github.com/domoinc/kube-valet/pkg/client \
 	github.com/domoinc/kube-valet/pkg/apis \
-	"assignments:v1alpha1"
+	"assignments:v1alpha1" \
+	--output-base ./build \
+	--go-header-file "$(PWD)/boilerplate/boilerplate.go.txt"
+
+	# Move generated files
+	mv build/github.com/domoinc/kube-valet/pkg/apis/assignments/v1alpha1/zz_generated.deepcopy.go pkg/apis/assignments/v1alpha1/
+	mv \
+		build/github.com/domoinc/kube-valet/pkg/client/clientset \
+		build/github.com/domoinc/kube-valet/pkg/client/informers \
+		build/github.com/domoinc/kube-valet/pkg/client/listers \
+		pkg/client
+	mv \
+		build/github.com/domoinc/kube-valet/pkg/client/openapi/* \
+		pkg/client/openapi
+
+	# Cleanup gen dir
+	rm -rf build/github.com
 
 	go test ./pkg/client/openapi/*.go -test.run=TestWriteOpenAPISpec
 
 	rm ./pkg/client/openapi/path_template.tmpl
 	rm ./pkg/client/openapi/print_test.go
 	rm ./pkg/client/openapi/openapi_generated.go
-
-	# workaround https://github.com/openshift/origin/issues/10357
-	find pkg/client -name "clientset_generated.go" -exec sed -i'' 's/return \\&Clientset{fakePtr/return \\&Clientset{\\&fakePtr/g' '{}' \;
 
 clean-customresources:
 	# Delete all generated code.

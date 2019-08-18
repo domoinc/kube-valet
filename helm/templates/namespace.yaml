@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-valet
+  # Ensure that valet pods can be created even if the webhook is required
+  labels:
+    kube-valet.io/ignore: ""

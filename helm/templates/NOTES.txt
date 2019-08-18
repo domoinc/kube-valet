@@ -1,0 +1,19 @@
+
+{{- if .Values.tls.auto }}
+## AUTOMATIC TLS ##
+The automatic TLS generates a secret called "tls-ca" in the "kube-valet" namespace.
+For added security, this secret should be downloaded, saved in a secure location,
+and then delted.
+{{- end }}
+
+## MASTER NODE PROTECTION ##
+It is highly advised that you protect masters nodes from being included
+in any NodeAssignmentGroups. This can be done with the command below:
+
+kubectl label node -l node-role.kubernetes.io/master nags.kube-valet.io/protected=true
+
+## NEXT STEPS ##
+
+{{ .Chart.Name | title }} is now ready for use.
+
+For usage examples see the documentation at https://github.com/domoinc/kube-valet#using-kube-valet

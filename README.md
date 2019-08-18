@@ -6,78 +6,111 @@ Kube-valet is a [custom controller](https://kubernetes.io/docs/concepts/api-exte
   * [Automatically apply scheduling configuration to pods after they are created](./_examples/resources/podassignmentrules/)
 
 It does this by utilizing
-[CustomResourceDefinitions](https://kubernetes.io/docs/concepts/api-extension/custom-resources/#customresourcedefinitions) to define its behavior and an [Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#initializers)
-to modify pods after they are created but before they are scheduled.
+[CustomResourceDefinitions](https://kubernetes.io/docs/concepts/api-extension/custom-resources/#customresourcedefinitions) to define its behavior and a [MutatingWebhook](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/)
+to modify pods as they are created.
 
 Kube-valet is currently in an **alpha** state.
 
-## Setup
+## Requirements
+
+* Kubernetes v1.13 or greater
+* The MutatingWebhook AdmissionController must be enabled (Default on most clusters)
+* The admissionregistration.k8s.io api group must be enabled (Default on most clusters)
+* Cluster administrator level access
+
+## Install Using Helm and Automatic TLS
+
+This is the easiest and fastest way to get started with kube-valet.
+
+```bash
+git clone git@github.com:domoinc/kube-valet.git
+cd kube-valet
+helm install -n kube-valet --set tls.auto=true --wait ./helm
+```
+
+It is normal for the automatic tls installation to take a few minutes
+while the images download and all the resource become ready.
+
+## Install Using Helm or YAML and Manual TLS
+
+**Note:** The instructions below are for generating a new self-signed certficates.
+This is done using CFSSL: Cloudflare's PKI and TLS toolkit. [Click here](https://blog.cloudflare.com/introducing-cfssl/) to know more.
+The cfssl tools used can be downloaded at https://pkg.cfssl.org/.
+
+### Get The Repository
 
 ```bash
 # Clone the repository and cd into it
 git clone git@github.com:domoinc/kube-valet.git
 cd kube-valet
-
-# Create the CustomResourceDefinitions used by kube-valet
-kubectl create -f deploy/customresourcedefinitions
-
-# Create the ServiceAccount
-kubectl create -f deploy/serviceaccount.yaml
-
-# If the cluster has RBAC enabled, create the RBAC resources
-kubectl create -f deploy/rbac.yaml
-
-# Protect the masters from being included in any NodeAssignmentGroups (skip this if running minikube)
-kubectl label node -l node-role.kubernetes.io/master nags.kube-valet.io/protected=true
 ```
 
-## Run the Controller
-
-### As a Static Pod on all Masters
-
-Because kube-valet uses initializers to modify all pods before they run, the prefered method of execution is as a [Static Pod](https://kubernetes.io/docs/tasks/administer-cluster/static-pod/). Static pods are not subject to the intializer admission controller. Kube-valet also has built-in leader election so that there is only one active valet even if multiple pods are running at the same time.
-
-Copy the static pod manifest to the nodes or masters that will be running a copy of kube-valet.
+### Generate Self-Signed TLS Certificates
 
 ```bash
-# From git
-curl -Lo /etc/kubernetes/manifests/kube-valet.yaml https://github.com/domoinc/kube-valet/deploy/static-pod.yaml
+# Make a dedicated dir for the certificates and cd into it
+mkdir tls
+cd tls
 
-# From the locally cloned repository
-cp deploy/static-pod.yaml /etc/kubernetes/manifests/kube-valet.yaml
+# Init a ca with cfssl
+cat <<EOF | cfssl genkey -initca - | cfssljson -bare ca
+{
+    "CN": "kube-valet-ca",
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    }
+}
+EOF
+
+# Create a self-signed key and certificate
+cat <<EOF | cfssl gencert -ca ca.pem -ca-key ca-key.pem - | cfssljson -bare server
+{
+    "CN": "kube-valet.kube-valet.svc",
+    "hosts": [
+        "kube-valet.kube-valet.svc",
+        "kube-valet.kube-valet.svc.cluster.local"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    }
+}
+EOF
+
+# Go back to the root of the project
+cd ../
 ```
 
-### As a Deployment
-
-**WARNING** While it's easier to kube-valet as a deployment, there are possible situations  where no pods will be initialized because kube-valet is not running to initilize itself. The deployment is constructed to minimize this possiblity, but it can still happen.
+### Install with Helm and Manual TLS
 
 ```bash
-kubectl create -f deploy/deployment.yaml
+# Put the certificates in the location expected by the helm templates by default
+cp -r tls helm/
+
+# Do helm install using default cert, ca, and key paths
+helm install -n kube-valet --wait ./helm
 ```
 
-#### Resolving a Self-Initialization Stalemate
-
-If the initializerconfiguration has already been created, or if all of the kube-valet pods ever get deleted at the same time, The kube-valet member pods must be manually initialized by editing them and removing `.metadata.initializers` list or with the following command:
+### Install with YAML and Manual TLS
 
 ```bash
-kubectl --namespace=kube-system get po --include-uninitialized -l k8s-app=kube-valet -o name | xargs -n1 kubectl --namespace=kube-system patch --type=json -p='[{"op":"remove","path":"/metadata/initializers/pending/0"}]'
+# Replace the cert and key placeholders in the valet secret
+vim deploy/secret.yaml
+
+# Replace the ca cert placeholder in the webhook config
+vim deploy/mutatingwebhookconfiguration.yaml
+
+# Apply the namespace
+kubectl apply -f deploy/namespace.yaml
+
+# Apply the deployment files
+kubectl apply -f deploy/
 ```
 
-If possible, the command above should be scheduled to run on a regular basis just to make sure that a self-initialization stalement is automatically resolved.
+---
 
-### Enable the Initializer
-
-**WARNING** Do not do this until kube-valet is running or the manual initializion command is running as a scheduled task.
-
-First, [enable Intializers](https://kubernetes.io/docs/admin/extensible-admission-controllers/#enable-initializers-alpha-feature) in the `kube-apiserver`
-
-Then, create the initalizerconfiguration for pods:
-
-```bash
-kubectl create -f deploy/initializerconfiguration.yaml
-```
-
-## Use Kube-Valet
+## Using Kube-Valet
 
 Kube-valet is configured entirely through the custom resources made during installation. The resources can be created, updated, and deleted just like any other kubernetes resource. Example:
 
@@ -122,40 +155,42 @@ valetctl assignment create relaxedpref prefer -t jobtype=relaxed -A for-jobs/rel
 
 # Make sure all jobtype=misc pods prefer to run any for-jobs assignments
 valetctl assignment create miscpref prefer -t jobtype=misc -A for-jobs
-```
 
-Make pods that match the rules created above and prove that they are on the designated nodes.
+# Create a Namespace
+kubectl create namespace kv-example
 
-```bash
+# Enable kube-valet in the namespace (not required for global installations)
+kubectl label namespace kv-example kube-valet.io/enabled=""
+
 # Report by nodes
 valetctl group report nodes
 
 # Run some jobtype=sensitive pods
-kubectl run sensitive --image=alpine:latest sleep 36000 -l jobtype=sensitive --replicas=5
+kubectl -n kv-example run sensitive --image=alpine:latest sleep 36000 -l jobtype=sensitive --replicas=5
 
 # Check which nodes are in the sensitive assignment column
 valetctl group report nags for-jobs
 
 # Check that the all of the pods went to the expected nodes automatically
-kubectl get pods -l jobtype=sensitive -o wide
+kubectl -n kv-example get pods -l jobtype=sensitive -o wide
 
 # Run some jobtype=relaxed pods
-kubectl run relaxed --image=alpine:latest sleep 36000 -l jobtype=relaxed --replicas=5
+kubectl -n kv-example run relaxed --image=alpine:latest sleep 36000 -l jobtype=relaxed --replicas=5
 
 # Check which nodes are in the relaxed assignment column
 valetctl group report nags for-jobs
 
 # Check that all or most of the pods went to the expected nodes automatically
-kubectl get pods -l jobtype=relaxed -o wide
+kubectl -n kv-example get pods -l jobtype=relaxed -o wide
 
 # Run some jobtype=misc pods
-kubectl run misc --image=alpine:latest sleep 36000 -l jobtype=misc --replicas=5
+kubectl -n kv-example run misc --image=alpine:latest sleep 36000 -l jobtype=misc --replicas=5
 
 # Check which nodes are in any assignment
 valetctl group report nags for-jobs
 
 # Check that all or most of the pods went to the expected nodes automatically
-kubectl get pods -l jobtype=misc -o wide
+kubectl -n kv-example get pods -l jobtype=misc -o wide
 ```
 
 Clean up the test resources
@@ -163,7 +198,7 @@ Clean up the test resources
 ```bash
 kubectl delete nag for-jobs
 kubectl delete cpar sensitivereq relaxedpref miscpref
-kubectl delete deployment sensitive relaxed misc
+kubectl delete namespace kv-example
 ```
 
 ## Protecting Resources
@@ -178,29 +213,18 @@ It is possible to instruct kube-valet to always ignore specific pods or nodes.
 
   * Kube-valet will ignore nodes with a label of `nags.kube-valet.io/protected=true`
 
-## Disaster Recovery
-
-If pods are not showing up via normal `kubectl` commands, check for unintialized pods by adding the `--include-uninitialized` flag. Example:
-
-```bash
-kubectl get pods --include-uninitialized --all-namespaces
-```
-
-If kube-valet is not running or not working and pods are getting stuck in an un-initalized state: Follow the [Disaster Recovery docs](./docs/DisasterRecovery.md) to disable the initializer and manually initialize all pods.
-
 ## Local Development
 
 ### Requirements
 
   * `make`
-  * Golang 1.9+
-  * [glide](https://github.com/Masterminds/glide)
+  * Golang 1.12+
 
 ### Process
 
   * Code change
-  * `make`
-  * Run via `./build/kube-valet --kubeconfig ~/.kube/config --loglevel="DEBUG" --no-leader-elect`
+  * `make` to build everything or `make build` to just build kube-valet and valetctl.
+  * Run via `./build/kube-valet --kubeconfig ~/.kube/config --loglevel="DEBUG" --no-leader-elect --key=/path/to/key.pem --cert=/path/to/cert.pem`
 
 ### Building a Release Image
 

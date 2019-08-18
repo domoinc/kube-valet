@@ -7,7 +7,6 @@ import (
 	logging "github.com/op/go-logging"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/client-go/kubernetes"
@@ -23,13 +22,13 @@ type WriterContext struct {
 	CurrentAssignments  map[string]int
 	AssignmentChanges   map[string]int
 	UnassignedNodeNames map[string]struct{}
-	kubeClient       kubernetes.Interface
+	kubeClient          kubernetes.Interface
 	log                 *logging.Logger
 }
 
 func NewWriterContext(kubeClientSet kubernetes.Interface, nag *assignmentsv1alpha1.NodeAssignmentGroup) *WriterContext {
 	wc := &WriterContext{
-		kubeClient:       kubeClientSet,
+		kubeClient:          kubeClientSet,
 		Nag:                 nag,
 		UnassignedNodeNames: make(map[string]struct{}),
 		log:                 logging.MustGetLogger("NodeAssignmentModel"),
@@ -167,11 +166,7 @@ func (wc *WriterContext) updateAssignmentChanges() {
 
 // UpdateNodeAssignment uses the NodeAssignmentController's clients to do api updates
 func (wc *WriterContext) UpdateNodeAssignment(node *corev1.Node, na *assignmentsv1alpha1.NodeAssignment) error {
-	o, err := runtime.NewScheme().DeepCopy(node)
-	if err != nil {
-		return err
-	}
-	assignedNode := o.(*corev1.Node)
+	assignedNode := node.DeepCopy()
 
 	// Add or remove labels/taints
 	if na != nil {

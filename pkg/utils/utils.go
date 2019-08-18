@@ -6,6 +6,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+type JsonPatchOperation struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value,omitempty"`
+}
+
 // IsEmptyPatch returns true if a generate patch is empty
 func IsEmptyPatch(b []byte) bool {
 	// an empty patch of "{}" has a len of 2. No need to send a zero patch
