@@ -129,7 +129,6 @@ spec:
   completions: 1
   parallelism: 1
   backoffLimit: 1
-  restartPolicy: Never
   template:
     spec:
       serviceAccountName: tls-bootstrap
